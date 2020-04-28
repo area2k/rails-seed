@@ -1,0 +1,10 @@
+# Ignore bundler config.
+/.bundle
+
+# Ignore all logfiles and tempfiles.
+/log
+/tmp
+
+# Ignore local environment files.
+*.env
+.env.test

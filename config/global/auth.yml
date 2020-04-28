@@ -1,0 +1,20 @@
+development: &default
+  device_ttl: <%= 1.week.to_i %>
+  token_ttl: <%= 5.minutes.to_i  %>
+  # TODO: replace issuer with your app key
+  issuer: YOURAPP
+  jwt_alg: HS256
+
+test:
+  <<: *default
+
+qa:
+  <<: *default
+
+staging:
+  <<: *default
+
+production:
+  <<: *default
+  device_ttl: <%= 2.weeks.to_i %>
+  ttl: <%= 15.minutes.to_i %>

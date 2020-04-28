@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+module Enums
+  class <%= class_name %>FieldEnum < BaseEnum
+    description 'Selectable fields on <%= class_name %>'
+
+    <%= class_name %>Filter.filters.keys.sort.each do |key|
+      value key.to_s.upcase, value: key
+    end
+  end
+end

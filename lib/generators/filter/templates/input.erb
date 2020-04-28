@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+module Inputs
+  module Filters
+    class <%= class_name %>Filter < BaseFilter
+      description 'Filters using <%= class_name %> fields'
+
+      argument :field, Enums::<%= class_name %>FieldEnum, required: true
+    end
+  end
+end

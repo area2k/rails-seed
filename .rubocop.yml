@@ -1,0 +1,45 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.6.2
+  DisplayCopNames: true
+  Include:
+    - app/**/*
+    - lib/**/*.rb
+  Exclude:
+    - app/views/**/*
+    - bin/**/*
+    - config/**/*
+    - db/**/*
+    - lib/tasks/**/*
+    - spec/**/*
+    - test/**/*
+
+Metrics/AbcSize:
+  Max: 30
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  Exclude:
+    - app/api/**/*
+    - app/graphql/types/query_type.rb
+
+Metrics/LineLength:
+  Max: 110
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Naming/FileName:
+  Exclude:
+    - Gemfile
+    - Capfile
+    - Rakefile
+
+Style/Lambda:
+  EnforcedStyle: literal
+
+Style/Documentation:
+  Enabled: false

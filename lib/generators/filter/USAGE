@@ -1,0 +1,10 @@
+Description:
+    Generate filter class with GraphQL enum and input
+
+Example:
+    rails generate filter Model
+
+    This will create:
+        app/filters/model_filter.rb
+        app/graphql/enums/model_field_enum.rb
+        app/graphql/inputs/filters/model_filter.rb

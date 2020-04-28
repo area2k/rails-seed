@@ -1,0 +1,22 @@
+# TODO: change database names to application name
+
+default: &default
+  adapter: mysql2
+  host: localhost
+  username: <%= ENV['MYSQL_USER'] %>
+  password: <%= ENV['MYSQL_PASS'] %>
+
+development:
+  <<: *default
+  database: train_development
+
+production:
+  <<: *default
+  database: app_production
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: app_test
