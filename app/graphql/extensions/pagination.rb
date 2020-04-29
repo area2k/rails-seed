@@ -16,13 +16,11 @@ module Extensions
       total_items = value.unscope(:select).count
       total_pages = (total_items / per_page.to_f).ceil
 
-      {
-        items: value.limit(per_page).offset((page - 1) * per_page),
+      { items: value.limit(per_page).offset((page - 1) * per_page),
         page_info: {
           total_items: total_items,
           total_pages: total_pages
-        }
-      }
+        } }
     end
   end
 end
