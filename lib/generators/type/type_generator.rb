@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class TypeGenerator < Rails::Generators::NamedBase
+  IGNORED_COLUMNS = %w[uuid created_at updated_at].freeze
+
   source_root File.expand_path('templates', __dir__)
 
   def generate_files
@@ -13,18 +15,17 @@ class TypeGenerator < Rails::Generators::NamedBase
     @associations ||= begin
       model.reflect_on_all_associations.map do |assoc|
         class_name = assoc.options.fetch(:class_name, assoc.name).to_s.classify
-        list = assoc.is_a?(ActiveRecord::Reflection::HasManyReflection)
 
         { name: assoc.name,
-          type: list ? "[#{class_name}Type]" : "#{class_name}Type",
-          null: !list }
+          type: assoc.collection? ? "[#{class_name}Type]" : "#{class_name}Type",
+          null: !assoc.collection? && @model.columns_hash[assoc.foreign_key].null }
       end
     end
   end
 
   def db_columns
     model.columns_hash.each_with_object({}) do |(k, v), acc|
-      next if k.end_with?('_id') || %w[created_at updated_at].include?(k)
+      next if k.end_with?('_id') || IGNORED_COLUMNS.include?(k)
 
       acc[k] = { type: v.sql_type_metadata.type, null: v.null }
     end
@@ -32,6 +33,10 @@ class TypeGenerator < Rails::Generators::NamedBase
 
   def model
     @model ||= class_name.constantize
+  end
+
+  def nullable_belongs_to?(association)
+    @model.columns_hash[association.foreign_key].null
   end
 
   def to_scalar(name, type)
