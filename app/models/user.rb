@@ -10,7 +10,6 @@
 #  first_name           :string(64)
 #  last_name            :string(64)
 #  locale               :string(8)        default("en-US"), not null
-#  phone_number         :string(32)
 #  password_digest      :string(64)
 #  password_reset_token :string(32)
 #  password_stale       :boolean          default(FALSE), not null
