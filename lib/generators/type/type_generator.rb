@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TypeGenerator < Rails::Generators::NamedBase
-  IGNORED_COLUMNS = %w[id uid created_at updated_at].freeze
+  IGNORED_COLUMNS = %w[id uuid created_at updated_at].freeze
 
   source_root File.expand_path('templates', __dir__)
 
@@ -18,7 +18,7 @@ class TypeGenerator < Rails::Generators::NamedBase
 
         { name: assoc.name,
           type: assoc.collection? ? "[#{class_name}Type]" : "#{class_name}Type",
-          null: !assoc.collection? && @model.columns_hash[assoc.foreign_key].null }
+          null: !assoc.collection? && model.columns_hash[assoc.foreign_key].null }
       end
     end
   end
@@ -31,12 +31,12 @@ class TypeGenerator < Rails::Generators::NamedBase
     end
   end
 
-  def model
-    @model ||= class_name.constantize
+  def description
+    class_name.underscore.tr('_', ' ').humanize
   end
 
-  def nullable_belongs_to?(association)
-    @model.columns_hash[association.foreign_key].null
+  def model
+    @model ||= class_name.constantize
   end
 
   def to_scalar(name, type)

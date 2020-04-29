@@ -5,10 +5,12 @@ module Types
     include Timestamps
     include UUID
 
-    description '<%= name.humanize %>'
+    description '<%= description %>'
+    <%- if db_columns.any? -%>
 
-    <%- db_columns.each do |name, column| -%>
+      <%- db_columns.each do |name, column| -%>
     field :<%= name %>, <%= to_scalar(name, column[:type]) %>, null: <%= column[:null] %>
+      <%- end -%>
     <%- end -%>
     <%- if associations.present? -%>
 
