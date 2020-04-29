@@ -22,7 +22,7 @@ module CustomArgumentLoader
     end
 
     def create_loader(resource_name, loader:)
-      class_eval <<~RUBY
+      class_eval <<~RUBY, __FILE__, __LINE__ + 1
         def load_#{resource_name}(value)
           public_send(:#{loader}, value, argument_name: :#{resource_name})
         end
