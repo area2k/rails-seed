@@ -20,9 +20,9 @@ ActiveRecord::Schema.define(version: 2020_04_28_025113) do
     t.datetime "last_issued_at", null: false
     t.integer "expires_at", null: false
     t.string "user_agent", null: false
-    t.string "ip", limit: 32
-    t.string "client", limit: 32
-    t.string "client_version", limit: 32
+    t.string "ip", null: false, limit: 32
+    t.string "client", null: false, limit: 32
+    t.string "client_version", null: false, limit: 32
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["refresh_token"], name: "index_devices_on_refresh_token", unique: true
