@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TypeGenerator < Rails::Generators::NamedBase
-  IGNORED_COLUMNS = %w[uuid created_at updated_at].freeze
+  IGNORED_COLUMNS = %w[id uid created_at updated_at].freeze
 
   source_root File.expand_path('templates', __dir__)
 
