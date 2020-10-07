@@ -25,15 +25,14 @@ class GraphQLController < ApplicationController
       device: RequestStore[:device],
       device_id: RequestStore[:device_id],
       request: {
-        app_version: app_version,
+        client: client,
+        client_version: client_version,
         id: RequestStore[:request_id] ||= request.request_id,
         ip: ip,
-        platform: platform,
         token: RequestStore[:request_token],
         user_agent: user_agent
       },
-      token: RequestStore[:token],
-      user_id: RequestStore[:user_id]
+      token: RequestStore[:token]
     }
   end
 

@@ -1,7 +1,7 @@
 default:
-  app_version: X-App-Version
   authorization: Authorization
+  client: X-Client
+  client_version: X-Client-Version
   new_token: X-Refreshed-Token
-  platform: X-Platform
   refresh_token: X-Refresh
   request_id: X-Request-Id
