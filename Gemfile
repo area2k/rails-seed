@@ -10,7 +10,7 @@ gem 'request_store'
 gem 'rack-cors', require: 'rack/cors'
 
 # Graphql
-gem 'graphql'
+gem 'graphql', '= 1.11.5'
 gem 'graphql-batch'
 gem 'graphiql-rails'
 
