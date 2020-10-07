@@ -14,9 +14,6 @@ gem 'graphql'
 gem 'graphql-batch'
 gem 'graphiql-rails'
 
-# Enums
-gem 'enumerate_it'
-
 # Global configs
 gem 'global'
 

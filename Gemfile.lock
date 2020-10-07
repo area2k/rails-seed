@@ -71,8 +71,6 @@ GEM
     dotenv-rails (2.7.1)
       dotenv (= 2.7.1)
       railties (>= 3.2, < 6.1)
-    enumerate_it (1.7.0)
-      activesupport (>= 3.0.0)
     erubi (1.9.0)
     factory_bot (5.1.1)
       activesupport (>= 4.2.0)
@@ -222,7 +220,6 @@ DEPENDENCIES
   bcrypt
   database_cleaner
   dotenv-rails
-  enumerate_it
   factory_bot
   faker
   global
