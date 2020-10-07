@@ -1,73 +1,57 @@
 # frozen_string_literal: true
 
 module AuthenticationService
-  KEY_PREFIX = 'tokens:user:'
+  DEVICE_PREFIX = 'tokens:device:'
 
-  RefreshTokenNotFound = Class.new(StandardError)
+  TokenNotWhitelisted = Class.new(StandardError)
 
   module_function
 
-  def deauthorize(user_id)
-    Device.where(user_id: user_id).update_all(expires_at: 0)
-    revoke_all(user_id)
-  end
-
-  def deactivate(device)
-    device.update!(expires_at: 0)
-    revoke(device.user_id, jti: device.last_issued)
-  end
-
-  def issue(user, **attrs)
-    attrs[:last_issued] = SecureRandom.base36
-    device = user.devices.create!(**attrs)
-
-    token = SecureToken.new(sub: user.id, jti: attrs[:last_issued], d: device.id)
-    add_to_whitelist(token)
-
-    [device, token]
-  end
-
-  def refresh(device, **attrs)
-    SecureToken.new(sub: device.user_id, d: device.id).tap do |token|
-      add_to_whitelist(token)
-      device.refresh(**attrs, jti: token.jti)
+  def issue(device_id, jti: SecureRandom.base58, **attrs)
+    SecureToken.new(**attrs, jti: jti, sub: device_id).tap do |token|
+      TokenWhitelist.add(token, key: "#{DEVICE_PREFIX}#{device_id}")
     end
   end
 
-  def revoke(user_id, jti:)
-    Redis.current.zrem("#{KEY_PREFIX}#{user_id}", jti)
+  def revoke(device_id)
+    TokenWhitelist.remove("#{DEVICE_PREFIX}#{device_id}")
   end
 
-  def revoke_all(user_id)
-    Redis.current.del("#{KEY_PREFIX}#{user_id}")
+  def revoke_all(*device_ids)
+    TokenWhitelist.remove_all(*device_ids.flat_map { |id| "#{DEVICE_PREFIX}#{id}" })
   end
 
   def verify(jwt)
-    SecureToken.validate!(jwt).tap do |token|
-      return nil unless whitelisted?(token)
-    end
-  rescue JWT::DecodeError
+    verify!(jwt)
+  rescue JWT::DecodeError, TokenNotWhitelisted
     nil
   end
 
-  ## private ##
-
-  def add_to_whitelist(token)
-    key = "#{KEY_PREFIX}#{token.sub}"
-
-    Redis.current.multi do
-      Redis.current.zadd(key, token.exp, token.jti)
-      Redis.current.zremrangebyscore(key, '-inf', "(#{Time.now.to_i}")
-      Redis.current.expireat(key, token.exp)
+  def verify!(jwt)
+    SecureToken.validate!(jwt).tap do |token|
+      raise TokenNotWhitelisted unless TokenWhitelist.whitelisted?(token, key: "#{DEVICE_PREFIX}#{token[:sub]}")
     end
   end
-  private_class_method :add_to_whitelist
 
-  def whitelisted?(token)
-    key = "#{KEY_PREFIX}#{token[:sub]}"
-    token_expiration = Redis.current.zscore(key, token[:jti])
+  class TokenWhitelist
+    def self.add(token, key:)
+      Redis.current.multi do
+        Redis.current.zadd(key, token[:exp], token[:jti])
+        Redis.current.zremrangebyscore(key, '-inf', "(#{Time.now.to_i}")
+        Redis.current.expireat(key, token[:exp])
+      end
+    end
 
-    token_expiration.present? && token_expiration > Time.now.to_i
+    def self.remove(key, jti:)
+      Redis.current.zrem(key, jti)
+    end
+
+    def self.remove_all(*keys)
+      Redis.current.del(*keys)
+    end
+
+    def self.whitelisted?(token, key:)
+      Redis.current.zscore(key, token[:jti]) > Time.now.to_i
+    end
   end
-  private_class_method :whitelisted?
 end

@@ -15,10 +15,10 @@ module Mutations
       user = User.find_by(email: email)
       invalid_login! unless user&.valid_password?(password)
 
-      device, token = AuthenticationService.issue(user, request_attrs)
+      device = user.devices.create!(**request_attrs)
+      token = AuthenticationService.issue(device_id, jti: device.last_issued)
 
-      { access_token: token, refresh_token: device.refresh_token,
-        user: user }
+      { access_token: token, refresh_token: device.refresh_token, user: user }
     end
 
     private

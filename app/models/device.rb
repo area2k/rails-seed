@@ -30,6 +30,7 @@ class Device < ApplicationRecord
 
   preprocess uuid: -> { SecureRandom.uuid },
              refresh_token: -> { SecureRandom.hex(16) },
+             last_issued: -> { SecureRandom.base36 },
              last_issued_at: -> { Time.now },
              expires_at: -> { Time.now.to_i + Global.auth.device_ttl }
 
