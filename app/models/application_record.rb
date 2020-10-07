@@ -27,6 +27,10 @@ class ApplicationRecord < ActiveRecord::Base
     self.class.base_class.name
   end
 
+  def id_name
+    "#{self.class.name}##{id}"
+  end
+
   def saved_attributes(except: %w[updated_at])
     saved_changes.except(*except)
   end

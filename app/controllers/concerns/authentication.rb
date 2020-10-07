@@ -5,53 +5,56 @@ require 'active_support/concern'
 module Authentication
   extend ActiveSupport::Concern
 
-  APP_VERSION_HEADER = Global.headers.app_version
   AUTHORIZATION_HEADER = Global.headers.authorization
+  CLIENT_HEADER = Global.headers.client
+  CLIENT_VERSION_HEADER = Global.headers.client_version
   NEW_TOKEN_HEADER = Global.headers.new_token
-  PLATFORM_HEADER = Global.headers.platform
-  REFRESH_HEADER = Global.headers.refresh_token
   USER_AGENT_HEADER = 'User-Agent'
   UNKNOWN = '<unknown>'
 
-  def app_version
-    RequestStore[:app_version] ||=
-      request.headers.fetch(APP_VERSION_HEADER, UNKNOWN)[0...32]
+  def attempt_refresh
+    request_token = SecureToken.decode!(RequestStore[:request_token])
+
+    RequestStore[:device] = Device.find_by(id: request_token[:sub])
+    unless RequestStore[:device]
+      Rails.logger.warn "Device not found with id: #{request_token[:sub]}"
+      return
+    end
+
+    unless RequestStore[:device].active?
+      Rails.logger.warn "Current #{RequestStore[:device].id_name} is not active"
+      return
+    end
+
+    AuthenticationService.issue(RequestStore[:device]).tap do |token|
+      RequestStore[:device].refresh!(jti: token[:jti], **request_attrs)
+      response.set_header(NEW_TOKEN_HEADER, token.to_s)
+
+      Rails.logger.info "#{RequestStore[:device].id_name} refreshed: #{token.jti}"
+    end
+  rescue JWT::DecodeError
+    Rails.logger.warn 'Token could not be decoded'
+    nil
   end
 
-  def attempt_refresh
-    unless request.headers[REFRESH_HEADER].present?
-      Rails.logger.warn 'Refresh token not present in request'
-      return
-    end
+  def client
+    RequestStore[:client] ||= request.headers.fetch(CLIENT_HEADER, UNKNOWN)[0...16]
+  end
 
-    RequestStore[:device] = Device.find_by(refresh_token: request.headers[REFRESH_HEADER])
-    unless RequestStore[:device]&.active?
-      Rails.logger.warn 'Current device not active'
-      return
-    end
-
-    AuthenticationService.refresh(RequestStore[:device], request_info).tap do |token|
-      Rails.logger.info "Refreshed Device##{RequestStore[:device].id}: #{token.jti}"
-      response.set_header(NEW_TOKEN_HEADER, token.to_s)
-    end
+  def client_version
+    RequestStore[:client_version] ||= request.headers.fetch(CLIENT_VERSION_HEADER, UNKNOWN)[0...32]
   end
 
   def ip
     RequestStore[:ip] ||= request.ip
   end
 
-  def platform
-    RequestStore[:platform] ||=
-      request.headers.fetch(PLATFORM_HEADER, UNKNOWN)[0...16]
-  end
-
-  def request_info
-    { app_version: app_version, ip: ip, platform: platform, user_agent: user_agent }
+  def request_attrs
+    { client: client, client_version: client_version, ip: ip, user_agent: user_agent }
   end
 
   def user_agent
-    RequestStore[:user_agent] ||=
-      request.headers.fetch(USER_AGENT_HEADER, UNKNOWN)[0...255]
+    RequestStore[:user_agent] ||= request.headers.fetch(USER_AGENT_HEADER, UNKNOWN)[0...255]
   end
 
   def verify_token
@@ -67,15 +70,13 @@ module Authentication
       RequestStore[:token] = attempt_refresh
     end
     unless RequestStore[:token]
-      Rails.logger.warn 'Device not able to refresh token'
+      Rails.logger.warn 'Token was not able to be refreshed'
       return
     end
 
-    RequestStore[:user_id] = RequestStore[:token].sub
-    RequestStore[:device_id] = RequestStore[:token].d
+    RequestStore[:device_id] = RequestStore[:token][:sub]
 
-    Rails.logger.info "Authenticated u:#{RequestStore[:user_id]}" \
-                      " d:#{RequestStore[:device_id]}" \
-                      " jti:#{RequestStore[:token].jti}"
+    Rails.logger.info "Authenticated Device##{RequestStore[:device_id]}" \
+                      " (#{RequestStore[:token][:jti]})"
   end
 end

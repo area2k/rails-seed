@@ -18,7 +18,7 @@ module Mutations
       device = user.devices.create!(**request_attrs)
       token = AuthenticationService.issue(device_id, jti: device.last_issued)
 
-      { access_token: token, refresh_token: device.refresh_token, user: user }
+      { access_token: token.to_s, refresh_token: device.refresh_token, user: user }
     end
 
     private
