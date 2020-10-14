@@ -13,6 +13,8 @@
 ActiveRecord::Schema.define(version: 2020_04_28_025113) do
 
   create_table "devices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "actor_id", null: false
+    t.string "actor_type", limit: 32, null: false
     t.integer "user_id", null: false
     t.string "uuid", limit: 64, null: false
     t.string "refresh_token", limit: 32, null: false
@@ -25,6 +27,7 @@ ActiveRecord::Schema.define(version: 2020_04_28_025113) do
     t.string "client_version", null: false, limit: 32
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["actor_id", "actor_type"], name: "index_devices_on_actor_id_and_actor_type"
     t.index ["refresh_token"], name: "index_devices_on_refresh_token", unique: true
     t.index ["user_id"], name: "index_devices_on_user_id"
     t.index ["uuid"], name: "index_devices_on_uuid", unique: true

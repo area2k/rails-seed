@@ -1,7 +1,7 @@
 require 'sidekiq'
 require 'sidekiq/web'
 
-uri = ENV['REDISTOGO_URL'] || 'redis://localhost:6379/4'
+uri = ENV.fetch(ENV.fetch('REDIS_PROVIDER', 'REDIS_URL'))
 
 Sidekiq.configure_server do |config|
   config.redis = { url: uri }

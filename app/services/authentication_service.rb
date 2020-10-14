@@ -7,9 +7,15 @@ module AuthenticationService
 
   module_function
 
-  def issue(device_id, jti: SecureRandom.base58, **attrs)
+  def issue(device_id, jti: SecureRandom.base36, **attrs)
     SecureToken.new(**attrs, jti: jti, sub: device_id).tap do |token|
       TokenWhitelist.add(token, key: "#{DEVICE_PREFIX}#{device_id}")
+    end
+  end
+
+  def refresh(device, jti: SecureRandom.base36, **request_attrs)
+    issue(device.id, jti: jti, actor: device.actor_key).tap do |token|
+      device.refresh(**request_attrs, jti: token[:jti])
     end
   end
 

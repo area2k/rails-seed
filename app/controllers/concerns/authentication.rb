@@ -9,15 +9,14 @@ module Authentication
   CLIENT_HEADER = Global.headers.client
   CLIENT_VERSION_HEADER = Global.headers.client_version
   NEW_TOKEN_HEADER = Global.headers.new_token
+  REFRESH_TOKEN_HEADER = Global.headers.refresh_token
   USER_AGENT_HEADER = 'User-Agent'
   UNKNOWN = '<unknown>'
 
   def attempt_refresh
-    request_token = SecureToken.decode!(RequestStore[:request_token])
-
-    RequestStore[:device] = Device.find_by(id: request_token[:sub])
+    RequestStore[:device] = Device.find_by(refresh_token: refresh_token)
     unless RequestStore[:device]
-      Rails.logger.warn "Device not found with id: #{request_token[:sub]}"
+      Rails.logger.warn "Device not found with token: #{refresh_token}"
       return
     end
 
@@ -26,15 +25,10 @@ module Authentication
       return
     end
 
-    AuthenticationService.issue(RequestStore[:device]).tap do |token|
-      RequestStore[:device].refresh!(jti: token[:jti], **request_attrs)
+    AuthenticationService.refresh(RequestStore[:device], **request_attrs).tap do |token|
       response.set_header(NEW_TOKEN_HEADER, token.to_s)
-
-      Rails.logger.info "#{RequestStore[:device].id_name} refreshed: #{token.jti}"
+      Rails.logger.info "#{RequestStore[:device].id_name} refreshed: #{token[:jti]}"
     end
-  rescue JWT::DecodeError
-    Rails.logger.warn 'Token could not be decoded'
-    nil
   end
 
   def client
@@ -47,6 +41,10 @@ module Authentication
 
   def ip
     RequestStore[:ip] ||= request.ip
+  end
+
+  def refresh_token
+    request.headers[REFRESH_TOKEN_HEADER]
   end
 
   def request_attrs
@@ -67,7 +65,7 @@ module Authentication
     RequestStore[:token] = AuthenticationService.verify(RequestStore[:request_token])
     unless RequestStore[:token]
       Rails.logger.warn 'Token not valid/whitelisted'
-      RequestStore[:token] = attempt_refresh
+      RequestStore[:token] = attempt_refresh if refresh_token.present?
     end
     unless RequestStore[:token]
       Rails.logger.warn 'Token was not able to be refreshed'
@@ -75,6 +73,7 @@ module Authentication
     end
 
     RequestStore[:device_id] = RequestStore[:token][:sub]
+    RequestStore[:actor_key] = RequestStore[:token][:actor]
 
     Rails.logger.info "Authenticated Device##{RequestStore[:device_id]}" \
                       " (#{RequestStore[:token][:jti]})"

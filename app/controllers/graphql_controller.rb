@@ -22,6 +22,7 @@ class GraphQLController < ApplicationController
 
   def context
     {
+      actor_key: RequestStore[:actor_key],
       device: RequestStore[:device],
       device_id: RequestStore[:device_id],
       request: {

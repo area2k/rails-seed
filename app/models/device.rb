@@ -5,6 +5,8 @@
 # Table name: devices
 #
 #  id             :bigint           not null, primary key
+#  actor_id       :integer          not null
+#  actor_type     :string(32)       not null
 #  user_id        :integer          not null
 #  uuid           :string(64)       not null
 #  refresh_token  :string(32)       not null
@@ -34,12 +36,17 @@ class Device < ApplicationRecord
              last_issued_at: -> { Time.now },
              expires_at: -> { Time.now.to_i + Global.auth.device_ttl }
 
+  belongs_to :actor, polymorphic: true
   belongs_to :user
 
   scope :active, -> { where(table[:expires_at].gt(arel_unix_timestamp)) }
 
   def active?
     expires_at > Time.now.to_i
+  end
+
+  def actor_key
+    { id: actor_id, type: actor_type }
   end
 
   def refresh(jti:, **attrs)

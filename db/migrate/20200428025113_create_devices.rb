@@ -1,6 +1,8 @@
 class CreateDevices < ActiveRecord::Migration[6.0]
   def change
     create_table :devices do |t|
+      t.integer :actor_id, null: false
+      t.string :actor_type, null: false, limit: 32
       t.integer :user_id, null: false
       t.string :uuid, null: false, limit: 64
       t.string :refresh_token, null: false, limit: 32
@@ -13,6 +15,7 @@ class CreateDevices < ActiveRecord::Migration[6.0]
       t.string :client_version, null: false, limit: 32
       t.timestamps
 
+      t.index %i[actor_id actor_type]
       t.index %i[user_id]
       t.index %i[uuid], unique: true
       t.index %i[refresh_token], unique: true

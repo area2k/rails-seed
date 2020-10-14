@@ -4,10 +4,10 @@ module CustomArgumentLoader
   extend ActiveSupport::Concern
 
   class_methods do
-    def argument(*args, autoload: nil, loader: nil, **kwargs)
+    def argument(*args, autofetch: nil, loader: nil, **kwargs)
       resource_name = nil
 
-      if autoload || loader
+      if autofetch || loader
         name = args[0].to_s
         resource_name = name.delete_suffix(name.ends_with?('_id') ? '_id' : '_ids')
         resource_name = resource_name.to_sym
@@ -16,15 +16,14 @@ module CustomArgumentLoader
       end
 
       super(*args, **kwargs).tap do
-        loader ||= :default_loader
-        create_loader(resource_name, loader: loader) if resource_name
+        create_loader(kwargs[:as], loader: loader) if autofetch || loader
       end
     end
 
     def create_loader(resource_name, loader:)
       class_eval <<~RUBY, __FILE__, __LINE__ + 1
         def load_#{resource_name}(value)
-          public_send(:#{loader}, value, argument_name: :#{resource_name})
+          __send__(:#{loader || :default_loader}, value, argument_name: :#{resource_name})
         end
       RUBY
     end

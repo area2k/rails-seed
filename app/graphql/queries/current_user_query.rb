@@ -9,8 +9,8 @@ module Queries
       current_user
     end
 
-    def ready?(**)
-      allow! authenticated?
+    def prescreen?(**)
+      authenticated?
     end
   end
 end
