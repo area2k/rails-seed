@@ -48,8 +48,8 @@ module AuthenticationService
       end
     end
 
-    def self.remove(key, jti:)
-      Redis.current.zrem(key, jti)
+    def self.remove(key)
+      Redis.current.del(key)
     end
 
     def self.remove_all(*keys)
@@ -57,7 +57,10 @@ module AuthenticationService
     end
 
     def self.whitelisted?(token, key:)
-      Redis.current.zscore(key, token[:jti]) > Time.now.to_i
+      expires_at = Redis.current.zscore(key, token[:jti])
+      return false unless expires_at
+
+      expires_at > Time.now.to_i
     end
   end
 end
