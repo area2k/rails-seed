@@ -1,0 +1,22 @@
+# frozen_string_literal: true
+
+module Queries
+  class <%= class_name %>Query < BaseQuery
+    description 'Get <%= human_class_name %> by id'
+    type Types::<%= class_name %>Type, null: false
+
+    argument :<%= variable_name %>_id, ID, required: true, autofetch: true
+
+    def resolve(<%= variable_name %>:, **)
+      <%= variable_name %>
+    end
+
+    def prescreen?(**)
+      # TODO: add authentication check
+    end
+
+    def permitted?(<%= variable_name %>:, **)
+      # TODO: add permissions check
+    end
+  end
+end

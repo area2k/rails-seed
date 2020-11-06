@@ -1,0 +1,9 @@
+Description:
+    Generate default GraphQL queries for a given model
+
+Example:
+    rails generate queries Model
+
+    This will create:
+        app/graphql/queries/model_query.rb
+        app/graphql/queries/models_query.rb

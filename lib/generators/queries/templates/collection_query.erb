@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+module Queries
+  class <%= class_name.pluralize %>Query < BaseQuery
+    description 'List <%= human_class_name.pluralize %>'
+    type <%= collection_type_name %>, null: false
+
+    <%- if filtered? -%>
+    argument :filters, Inputs::Filters::<%= class_name %>Filter, required: false, default_value: []
+
+    extension Extensions::Filterable
+    <%- end -%>
+    <%- if paginated? -%>
+    extension Extensions::Paginated
+    <%- end -%>
+
+    def resolve(**)
+      <%= class_name %>.all
+    end
+
+    def prescreen?(**)
+      # TODO: add authentication check
+    end
+
+    def permitted?(**)
+      # TODO: add permissions check
+    end
+  end
+end
