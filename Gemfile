@@ -14,6 +14,9 @@ gem 'graphql', '= 1.11.5'
 gem 'graphql-batch'
 gem 'graphiql-rails'
 
+# Code services
+gem 'dry-monads', require: 'dry/monads/all'
+
 # Global configs
 gem 'global'
 

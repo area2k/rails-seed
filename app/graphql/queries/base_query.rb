@@ -6,5 +6,6 @@ module Queries
     include CustomArgumentLoader
     include ErrorHelpers
     include Finders
+    include MonadResolver
   end
 end
