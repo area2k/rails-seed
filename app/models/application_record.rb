@@ -34,4 +34,8 @@ class ApplicationRecord < ActiveRecord::Base
   def saved_attributes(except: %w[updated_at])
     saved_changes.except(*except)
   end
+
+  def to_actor
+    { id: id, type: base_class_name }
+  end
 end
