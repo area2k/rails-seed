@@ -13,7 +13,7 @@ module AuthHelpers
 
   def authorized?(**args)
     permitted?(**args).tap do |permitted|
-      error! message: 'Not permitted', code: :AUTHORIZATION_FAILED
+      error! message: 'Not permitted', code: :AUTHORIZATION_FAILED unless permitted
     end
   end
 
@@ -58,7 +58,7 @@ module AuthHelpers
 
   def ready?(**args)
     prescreen?(**args).tap do |allowed|
-      error! message: 'Not allowed', code: :AUTHORIZATION_FAILED
+      error! message: 'Not allowed', code: :AUTHORIZATION_FAILED unless allowed
     end
   end
 end

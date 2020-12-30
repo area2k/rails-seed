@@ -25,7 +25,7 @@ module MonadicResolver
 
       case error
       when Symbol
-        error! message: error.to_s.humanize, code: error
+        error! message: error.to_s.humanize, code: error.to_s.upcase
       when Array
         error! message: error[1], code: error[0].to_s.upcase
       when StandardError
