@@ -6,7 +6,7 @@ module Mutations
     include CustomArgumentLoader
     include ErrorHelpers
     include Finders
-    include MonadResolver
+    include MonadicResolver
 
     class << self
       def default_graphql_name
