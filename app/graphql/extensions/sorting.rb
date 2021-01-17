@@ -26,8 +26,7 @@ module Extensions
     end
 
     def resolve_query(value, args:)
-      # REVIEW: this will break in Rails 6.1
-      value.order("#{args[:sort_by]} #{args[:sort_dir]}")
+      value.order(args[:sort_by] => args[:sort_dir])
     end
   end
 end
