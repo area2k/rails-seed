@@ -30,8 +30,8 @@ module SQLService
     "(#{result})"
   end
 
-  def transaction(*args)
-    ApplicationRecord.transaction(*args) { yield }
+  def transaction(...)
+    ApplicationRecord.transaction(...)
   end
 
   ## private ##

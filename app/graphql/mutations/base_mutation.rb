@@ -16,8 +16,8 @@ module Mutations
 
     protected
 
-    def with_void_return
-      nil.tap { yield }
+    def with_void_return(&block)
+      nil.tap(&block)
     end
   end
 end

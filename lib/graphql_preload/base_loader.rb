@@ -13,6 +13,8 @@ module GraphQLPreload
     #   so as to keep separate from other loaders with the same target class and
     #   association name, but different scope
     def initialize(target_class, association, _scope_as_sql)
+      super
+
       @target_class = target_class
       @association = association
     end

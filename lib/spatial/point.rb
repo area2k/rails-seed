@@ -8,6 +8,8 @@ module Spatial
     attr_accessor :latitude, :longitude
 
     def initialize(latitude, longitude)
+      super
+
       @latitude = latitude
       @longitude = longitude
     end

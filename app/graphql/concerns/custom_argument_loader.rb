@@ -5,8 +5,6 @@ module CustomArgumentLoader
 
   class_methods do
     def argument(*args, autofetch: nil, loader: nil, **kwargs)
-      resource_name = nil
-
       if autofetch || loader
         name = args[0].to_s
         resource_name = name.delete_suffix(name.ends_with?('_id') ? '_id' : '_ids')
@@ -22,6 +20,10 @@ module CustomArgumentLoader
 
     def create_loader(resource_name, loader:)
       class_eval <<~RUBY, __FILE__, __LINE__ + 1
+        # def load_user(value)
+        #   __send__(:default_loader, value, argument_name: :user)
+        # end
+
         def load_#{resource_name}(value)
           __send__(:#{loader || :default_loader}, value, argument_name: :#{resource_name})
         end

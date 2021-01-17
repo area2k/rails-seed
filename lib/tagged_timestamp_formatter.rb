@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './ansi_color.rb'
+require_relative './ansi_color'
 
 module TaggedTimestampFormatter
   extend ANSIColor

@@ -10,6 +10,8 @@ module Spatial
     attr_accessor :rings
 
     def initialize(rings)
+      super
+
       @rings = rings.map { |r| Ring.new(r) }
     end
 

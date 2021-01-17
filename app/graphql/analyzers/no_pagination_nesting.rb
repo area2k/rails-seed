@@ -13,7 +13,7 @@ module Analyzers
       !introspection?
     end
 
-    def on_enter_field(node, parent, visitor)
+    def on_enter_field(_node, _parent, visitor)
       return if visitor.skipping? || visitor.visiting_fragment_definition?
 
       field = visitor.field_definition
@@ -22,7 +22,7 @@ module Analyzers
       @current_nesting += 1
     end
 
-    def on_leave_field(node, parent, visitor)
+    def on_leave_field(_node, _parent, visitor)
       return if visitor.skipping? || visitor.visiting_fragment_definition?
 
       @max_nesting = @current_nesting if @max_nesting < @current_nesting
@@ -32,7 +32,9 @@ module Analyzers
     end
 
     def result
-      raise GraphQL::AnalysisError.new('Schema does not allow nested paginated resources') if @max_nesting > 1
+      return unless @max_nesting > 1
+
+      raise GraphQL::AnalysisError, 'Schema does not allow nested paginated resources'
     end
 
     private

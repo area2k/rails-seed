@@ -9,4 +9,4 @@
 # Offense count: 6
 # Configuration parameters: CountComments, ExcludedMethods.
 Metrics/MethodLength:
-  Max: 19
+  Max: 20

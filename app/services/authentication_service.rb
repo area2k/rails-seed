@@ -35,7 +35,8 @@ module AuthenticationService
 
   def verify!(jwt)
     SecureToken.validate!(jwt).tap do |token|
-      raise TokenNotWhitelisted unless TokenWhitelist.whitelisted?(token, key: "#{DEVICE_PREFIX}#{token[:sub]}")
+      key = "#{DEVICE_PREFIX}#{token[:sub]}"
+      raise TokenNotWhitelisted unless TokenWhitelist.whitelisted?(token, key: key)
     end
   end
 

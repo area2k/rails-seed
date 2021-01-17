@@ -48,11 +48,11 @@ module AuthHelpers
     end
   end
 
-  def permitted?(**kwargs)
+  def permitted?(**)
     true
   end
 
-  def prescreen?(**kwargs)
+  def prescreen?(**)
     true
   end
 

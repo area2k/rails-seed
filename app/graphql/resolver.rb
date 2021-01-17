@@ -6,29 +6,9 @@ class Resolver < GraphQL::Schema::Resolver
   include ErrorHelpers
   include Finders
 
-  def authorized?(**args)
-    permitted?(**args).tap do |permitted|
-      error! message: 'Not permitted', code: :AUTHORIZATION_FAILED
-    end
-  end
-
-  def permitted?(**kwargs)
-    true
-  end
-
-  def prescreen?(**kwargs)
-    true
-  end
-
-  def ready?(**args)
-    prescreen?(**args).tap do |allowed|
-      error! message: 'Not allowed', code: :AUTHORIZATION_FAILED
-    end
-  end
-
   protected
 
-  def with_void_return
-    nil.tap { yield }
+  def with_void_return(&block)
+    nil.tap(&block)
   end
 end
