@@ -26,7 +26,7 @@ module AuthHelpers
   def current_actor_type
     case context[:actor_key][:type]
     # NOTE: add known actor types here
-    # eg: when 'User' then User
+    when 'User' then User
     else
       raise ArgumentError, "Unkown actor type `#{type}`!"
     end
