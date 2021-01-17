@@ -2,8 +2,9 @@ class CreateDevices < ActiveRecord::Migration[6.0]
   def change
     create_table :devices do |t|
       t.integer :actor_id, null: false
+      t.integer :actor_parent_id
       t.string :actor_type, null: false, limit: 32
-      t.integer :user_id, null: false
+      t.integer :user_id
       t.string :uuid, null: false, limit: 64
       t.string :refresh_token, null: false, limit: 32
       t.string :last_issued, null: false, limit: 32

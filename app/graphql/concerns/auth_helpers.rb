@@ -25,8 +25,8 @@ module AuthHelpers
 
   def current_actor_type
     case context[:actor_key][:type]
-    # NOTE: add actor types here
-    when 'User' then User
+    # NOTE: add known actor types here
+    # eg: when 'User' then User
     else
       raise ArgumentError, "Unkown actor type `#{type}`!"
     end
@@ -36,9 +36,13 @@ module AuthHelpers
     context[:actor_key][:id]
   end
 
+  def current_actor_parent_id
+    context[:actor_key][:parent_id]
+  end
+
   def current_device
     context.fetch(:device) do
-      context[:device] = Device.find(context[:device_id])
+      context[:device] = Device.find_by(id: context[:device_id])
     end
   end
 

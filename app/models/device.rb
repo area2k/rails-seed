@@ -4,21 +4,22 @@
 #
 # Table name: devices
 #
-#  id             :bigint           not null, primary key
-#  actor_id       :integer          not null
-#  actor_type     :string(32)       not null
-#  user_id        :integer          not null
-#  uuid           :string(64)       not null
-#  refresh_token  :string(32)       not null
-#  last_issued    :string(32)       not null
-#  last_issued_at :datetime         not null
-#  expires_at     :integer          not null
-#  user_agent     :string(255)      not null
-#  ip             :string(32)       not null
-#  client         :string(32)       not null
-#  client_version :string(32)       not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
+#  id              :bigint           not null, primary key
+#  actor_id        :integer          not null
+#  actor_parent_id :string(32)
+#  actor_type      :string(32)       not null
+#  user_id         :integer
+#  uuid            :string(64)       not null
+#  refresh_token   :string(32)       not null
+#  last_issued     :string(32)       not null
+#  last_issued_at  :datetime         not null
+#  expires_at      :integer          not null
+#  user_agent      :string(255)      not null
+#  ip              :string(32)       not null
+#  client          :string(32)       not null
+#  client_version  :string(32)       not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
 #
 # Indexes
 #
@@ -46,7 +47,7 @@ class Device < ApplicationRecord
   end
 
   def actor_key
-    { id: actor_id, type: actor_type }
+    { id: actor_id, parent_id: actor_parent_id, type: actor_type }
   end
 
   def refresh(jti:, **attrs)

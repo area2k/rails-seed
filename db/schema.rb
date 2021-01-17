@@ -14,8 +14,9 @@ ActiveRecord::Schema.define(version: 2020_04_28_025113) do
 
   create_table "devices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.integer "actor_id", null: false
+    t.integer "actor_parent_id"
     t.string "actor_type", limit: 32, null: false
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.string "uuid", limit: 64, null: false
     t.string "refresh_token", limit: 32, null: false
     t.string "last_issued", limit: 32, null: false

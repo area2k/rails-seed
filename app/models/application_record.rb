@@ -35,7 +35,7 @@ class ApplicationRecord < ActiveRecord::Base
     saved_changes.except(*except)
   end
 
-  def to_actor
-    { id: id, type: base_class_name }
+  def to_actor_key
+    { id: id, parent_id: respond_to?(:parent_id) ? parent_id : nil, type: base_class_name }
   end
 end
