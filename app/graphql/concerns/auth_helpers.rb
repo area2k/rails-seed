@@ -57,12 +57,24 @@ module AuthHelpers
   end
 
   def prescreen?(**)
-    true
+    return true unless self.class.allowed_actors.present?
+
+    self.class.allowed_actors.reduce(false) { |acc, elem| acc || actor_is?(elem) }
   end
 
   def ready?(**args)
     prescreen?(**args).tap do |allowed|
       error! message: 'Not allowed', code: :AUTHORIZATION_FAILED unless allowed
+    end
+  end
+
+  included do
+    class_attribute :allowed_actors
+  end
+
+  class_methods do
+    def allow_actors(*actors)
+      self.allowed_actors = actors
     end
   end
 end
