@@ -33,6 +33,8 @@ module YourApplication
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
+
+    # Uncomment to debug code loading errors
     # Rails.autoloaders.logger = method(:puts)
 
     # Disable automatic test code generation

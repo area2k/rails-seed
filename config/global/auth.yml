@@ -8,9 +8,6 @@ development: &default
 test:
   <<: *default
 
-qa:
-  <<: *default
-
 staging:
   <<: *default
 

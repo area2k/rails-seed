@@ -13,9 +13,9 @@ module Mutations
         user.update!(password_reset_token: SecureRandom.base36)
 
         # TODO: send forgot password email
-
-        Success()
       end
+
+      Success()
     end
   end
 end
