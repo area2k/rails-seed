@@ -1,22 +1,12 @@
 # TODO: change database names to application name
 
-default: &default
+development: &default
   adapter: mysql2
-  host: localhost
-  username: <%= ENV['MYSQL_USER'] %>
-  password: <%= ENV['MYSQL_PASS'] %>
-
-development:
-  <<: *default
   database: app_development
 
 test:
   <<: *default
   database: app_test
-
-qa:
-  <<: *default
-  database: app_qa
 
 staging:
   <<: *default

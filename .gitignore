@@ -8,3 +8,8 @@
 # Ignore local environment files.
 *.env
 .env.test
+
+# Ignore all config keys
+/config/**/*.key
+
+/config/credentials/development.key

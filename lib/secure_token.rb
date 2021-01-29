@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SecureToken
-  SECRET = Rails.application.secrets.secret_key_base
+  SECRET = Rails.application.credentials.secret_key_base!
 
   class << self
     def validate!(token)

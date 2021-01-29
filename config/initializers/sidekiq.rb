@@ -1,16 +1,20 @@
 require 'sidekiq'
 require 'sidekiq/web'
 
-uri = ENV.fetch(ENV.fetch('REDIS_PROVIDER', 'REDIS_URL'))
+REDIS_URI = ENV.fetch(ENV.fetch('REDIS_PROVIDER', 'REDIS_URL'))
+
+SIDEKIQ_CREDS = Rails.application.credentials.sidekiq!
+SIDEKIQ_USERNAME = SIDEKIQ_CREDS.fetch(:username)
+SIDEKIQ_PASSWORD = SIDEKIQ_CREDS.fetch(:password)
 
 Sidekiq.configure_server do |config|
-  config.redis = { url: uri }
+  config.redis = { url: REDIS_URI }
 end
 
 Sidekiq.configure_client do |config|
-  config.redis = { url: uri }
+  config.redis = { url: REDIS_URI }
 end
 
 Sidekiq::Web.use(Rack::Auth::Basic) do |user, password|
-  [user, password] == [ENV['SIDEKIQ_WEB_USER'], ENV['SIDEKIQ_WEB_PASS']]
+  [user, password] == [SIDEKIQ_USERNAME, SIDEKIQ_PASSWORD]
 end

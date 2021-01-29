@@ -10,42 +10,23 @@ namespace :setup do
     print 'Enter mysql password (default:):'
     mysql_pass = get(noecho: true)
 
+    print 'Enter mysql host (default: localhost:3306):'
+    mysql_host = get(default: 'localhost:3306')
+
     print 'Enter redis host (default: localhost:6379)'
     redis_host = get(default: 'localhost:6379')
 
     print 'Enter redis database (default: 0)'
     redis_db = get(default: '0')
 
-    redis_url = "redis://#{redis_host}/#{redis_db}"
-
     env = <<~SH
-      export MYSQL_USER=#{mysql_user}
-      export MYSQL_PASS=#{mysql_pass}
+      export DATABASE_URL=mysql2://#{mysql_user}:#{mysql_pass}@#{mysql_host}
 
       export REDIS_PROVIDER=REDIS_URL
-      export REDIS_URL=#{redis_url}
-
-      export SIDEKIQ_WEB_USER=sidekiq
-      export SIDEKIQ_WEB_PASS=sidekiq
-
-      export SECRET_KEY_BASE=#{SecureRandom.hex(64)}
-    SH
-
-    test_env = <<~SH
-      export MYSQL_USER=#{mysql_user}
-      export MYSQL_PASS=#{mysql_pass}
-
-      export REDIS_PROVIDER=REDIS_URL
-      export REDIS_URL=#{redis_url}
-
-      export SIDEKIQ_WEB_USER=sidekiq
-      export SIDEKIQ_WEB_PASS=sidekiq
-
-      export SECRET_KEY_BASE=#{SecureRandom.hex(64)}
+      export REDIS_URL=redis://#{redis_host}/#{redis_db}
     SH
 
     File.open(Rails.root.join('.env'), 'w') { |f| f.write(env) }
-    File.open(Rails.root.join('.env.test'), 'w') { |f| f.write(test_env) }
 
     puts "\nEnvironment config created"
 
