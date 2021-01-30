@@ -10,8 +10,15 @@ module Extensions
       field.argument :filters, [filter_input_class], required: false
     end
 
-    def after_resolve(arguments:, value:, **)
-      options[:with].apply(value, arguments.fetch(:filters, []))
+    def resolve(object:, arguments:, **)
+      clean_args = arguments.dup
+      filters = clean_args.delete(:filters)
+
+      yield(object, clean_args, { filters: filters })
+    end
+
+    def after_resolve(value:, memo:, **)
+      options[:with].apply(value, memo.fetch(:filters, []))
     end
   end
 end

@@ -13,6 +13,8 @@ module Types
     field :locale, Enums::LocaleEnum, null: false
     field :password_stale, Boolean, null: true
 
-    field :devices, [DeviceType], null: false, preload: true, method: :active_devices
+    field :devices, [DeviceType], null: false, method: :id do
+      extension Extensions::Dataloadable, association: :active_devices
+    end
   end
 end

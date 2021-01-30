@@ -12,8 +12,17 @@ module Extensions
       field.argument :per_page, Scalars::PositiveInt, required: false, default_value: per_page
     end
 
-    def after_resolve(arguments:, value:, **)
-      lookahead, page, per_page = arguments.values_at(:lookahead, :page, :per_page)
+    def resolve(object:, arguments:, **)
+      clean_args = arguments.dup
+      page = clean_args.delete(:page)
+      per_page = clean_args.delete(:per_page)
+
+      yield(object, clean_args, { page: page, per_page: per_page })
+    end
+
+    def after_resolve(value:, arguments:, memo:, **)
+      lookahead = arguments[:lookahead]
+      page, per_page = memo.values_at(:page, :per_page)
 
       result = { items: resolve_items(value, page: page, per_page: per_page) }
 

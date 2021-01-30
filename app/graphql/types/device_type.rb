@@ -15,6 +15,8 @@ module Types
     field :client, String, null: false
     field :client_version, String, null: false
 
-    field :user, UserType, null: false, preload: true
+    field :user, UserType, null: false, method: :user_id do
+      extension Extensions::Dataloadable, association: :user
+    end
   end
 end

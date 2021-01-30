@@ -9,10 +9,18 @@ module Extensions
       field.argument :sort_dir, Enums::SortDirectionEnum, required: false, default_value: dir
     end
 
-    def after_resolve(arguments:, value:, **)
-      return resolve_page(value, args: arguments) if page?(value)
+    def resolve(object:, arguments:, **)
+      clean_args = arguments.dup
+      sort_by = clean_args.delete(:sort_by)
+      sort_dir = clean_args.delete(:sort_dir)
 
-      resolve_query(value, args: arguments)
+      yield(object, clean_args, { by: sort_by, dir: sort_dir })
+    end
+
+    def after_resolve(value:, memo:, **)
+      return resolve_page(value, by: memo[:by], dir: memo[:dir]) if page?(value)
+
+      resolve_query(value, by: memo[:by], dir: memo[:dir])
     end
 
     private
@@ -21,12 +29,12 @@ module Extensions
       value.is_a?(Hash) && value.key?(:page_info)
     end
 
-    def resolve_page(value, args:)
-      { **value, items: resolve_query(value[:items], args: args) }
+    def resolve_page(value, **kwargs)
+      { **value, items: resolve_query(value[:items], **kwargs) }
     end
 
-    def resolve_query(value, args:)
-      value.order(args[:sort_by] => args[:sort_dir])
+    def resolve_query(value, by:, dir:)
+      value.order(by => dir)
     end
   end
 end
