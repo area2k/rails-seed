@@ -35,7 +35,7 @@ module Preprocessable
 
   def run_preprocess_attributes
     self.class.preprocess_attributes.each do |attr, callable|
-      self[attr] = callable.call
+      self[attr] ||= instance_exec(&callable)
     end
   end
 end
