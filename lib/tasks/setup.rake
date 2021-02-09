@@ -27,9 +27,9 @@ namespace :setup do
     SH
 
     File.open(Rails.root.join('.env'), 'w') { |f| f.write(env) }
+    Dotenv.load
 
     puts "\nEnvironment config created"
-
   rescue StandardError, Interrupt
     puts "\n"
     abort
