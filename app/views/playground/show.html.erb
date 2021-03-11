@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= render 'head' %>
+    <%= stylesheet_link_tag('playground') %>
+    <%= javascript_include_tag('playground') %>
+  </head>
+  <body>
+    <div id="root">
+      <%= render 'body' %>
+    </div>
+    <script>
+      window.addEventListener('load', function (event) {
+        GraphQLPlayground.init(document.getElementById('root'), {
+          endpoint: '/graphql',
+          settings: {
+            'schema.polling.enable': false
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
