@@ -9,7 +9,6 @@
 *.env
 .env.test
 
-# Ignore all config keys
+# Ignore all configs
 /config/**/*.key
-
-/config/credentials/development.key
+/config/**/*.yml.enc
