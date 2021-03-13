@@ -10,7 +10,7 @@ gem 'request_store'
 gem 'rack-cors', require: 'rack/cors'
 
 # Graphql
-gem 'graphql', '= 1.12.3'
+gem 'graphql', '= 1.12.6'
 
 # Code services
 gem 'dry-monads', require: 'dry/monads/all'
