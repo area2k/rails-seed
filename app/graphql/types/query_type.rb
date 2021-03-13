@@ -9,7 +9,7 @@ module Types
       field_name = query_name.to_s.underscore.delete_suffix('_query')
       resolver = Queries.const_get(query_name)
 
-      field field_name, resolver: resolver
+      field field_name, resolver: resolver, allow_actors: resolver.allowed_actors
     end
   end
 end

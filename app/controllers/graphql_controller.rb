@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 class GraphQLController < ApplicationController
+  include Authentication
+
   skip_before_action :verify_authenticity_token
-  before_action :verify_token
 
   def execute
+    context = create_context(auth: verify_token)
+
     result = if params[:_json]
                GraphQLService.multiplex(params[:_json], context: context)
              else
@@ -20,20 +23,18 @@ class GraphQLController < ApplicationController
 
   private
 
-  def context
+  def create_context(auth: nil)
     {
-      actor_key: RequestStore[:actor_key],
-      device: RequestStore[:device],
-      device_id: RequestStore[:device_id],
+      auth: auth,
+      authenticated?: auth.present?,
       request: {
         client: client,
         client_version: client_version,
-        id: RequestStore[:request_id] ||= request.request_id,
+        id: request_id,
         ip: ip,
-        token: RequestStore[:request_token],
+        token: request_token,
         user_agent: user_agent
-      },
-      token: RequestStore[:token]
+      }
     }
   end
 

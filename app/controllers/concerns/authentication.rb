@@ -51,18 +51,25 @@ module Authentication
     { client: client, client_version: client_version, ip: ip, user_agent: user_agent }
   end
 
+  def request_id
+    RequestStore[:request_id] ||= request.request_id
+  end
+
+  def request_token
+    RequestStore[:request_token] ||= request.headers[AUTHORIZATION_HEADER]
+  end
+
   def user_agent
     RequestStore[:user_agent] ||= request.headers.fetch(USER_AGENT_HEADER, UNKNOWN)[0...255]
   end
 
   def verify_token
-    RequestStore[:request_token] = request.headers[AUTHORIZATION_HEADER]
-    unless RequestStore[:request_token]
+    unless request_token
       Rails.logger.warn 'Token not present in request'
       return
     end
 
-    RequestStore[:token] = AuthenticationService.verify(RequestStore[:request_token])
+    RequestStore[:token] = AuthenticationService.verify(request_token)
     unless RequestStore[:token]
       Rails.logger.warn 'Token not valid/whitelisted'
       RequestStore[:token] = attempt_refresh if refresh_token.present?
@@ -72,10 +79,8 @@ module Authentication
       return
     end
 
-    RequestStore[:device_id] = RequestStore[:token][:sub]
-    RequestStore[:actor_key] = RequestStore[:token][:actor]
-
-    Rails.logger.info "Authenticated Device##{RequestStore[:device_id]}" \
-                      " (#{RequestStore[:token][:jti]})"
+    AuthContext.new(RequestStore[:token], device: RequestStore[:device]).tap do |auth|
+      Rails.logger.info "Authenticated Device##{auth.device_id} (#{auth.token[:jti]})"
+    end
   end
 end

@@ -14,7 +14,10 @@ module Extensions
     end
 
     def after_resolve(value:, context:, **)
-      context.dataloader.with(*options[:source]).request(value)
+      loaded = context.dataloader.with(*options[:source]).load(value)
+      return loaded unless loaded.nil?
+
+      options[:source][0] == Sources::RelationSource ? [] : nil
     end
 
     private

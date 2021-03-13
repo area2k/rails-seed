@@ -6,7 +6,8 @@ module Types
     graphql_name 'Mutation'
 
     (Mutations.constants - %i[BaseMutation]).each do |mutation_name|
-      field mutation_name.to_s.underscore, mutation: Mutations.const_get(mutation_name)
+      mutation = Mutations.const_get(mutation_name)
+      field mutation_name.to_s.underscore, mutation: mutation, allow_actors: mutation.allowed_actors
     end
   end
 end

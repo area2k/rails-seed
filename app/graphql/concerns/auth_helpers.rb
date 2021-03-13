@@ -3,12 +3,35 @@
 module AuthHelpers
   extend ActiveSupport::Concern
 
-  def actor_is?(type)
-    authenticated? && current_actor_type == type
+  included do
+    class_attribute :allowed_actors
+  end
+
+  class_methods do
+    def allow_actors(*actors)
+      self.allowed_actors = actors
+    end
+  end
+
+  %i[actor actor_type actor_id actor_parent_id device device_id token user user_id].each do |name|
+    define_method("current_#{name}") do
+      context[:auth].public_send(name)
+    end
+  end
+
+  def actor_is?(...)
+    context[:auth].actor_is?(...)
+  end
+
+  def authenticate_user(email:, password:)
+    user = User.find_by(email: email)
+    return Failure(:invalid_login) unless user&.valid_password?(password)
+
+    Success(user)
   end
 
   def authenticated?
-    context[:actor_key].present?
+    context[:authenticated?]
   end
 
   def authorized?(**args)
@@ -17,39 +40,12 @@ module AuthHelpers
     end
   end
 
-  def current_actor
-    context.fetch(:actor) do
-      context[:actor] = current_actor_type.find_by(id: current_actor_id)
-    end
-  end
+  def login_actor(actor, **device_attrs)
+    device = actor.devices.create!(**request_attrs, **device_attrs, actor_parent_id: actor.parent_id)
+    token = AuthenticationService.issue(device.id, jti: device.last_issued,
+                                                   actor: actor.to_actor_key)
 
-  def current_actor_type
-    case context[:actor_key][:type]
-    # TODO: add known actor types here
-    when 'User' then User
-    else
-      raise ArgumentError, "Unkown actor type `#{type}`!"
-    end
-  end
-
-  def current_actor_id
-    context[:actor_key][:id]
-  end
-
-  def current_actor_parent_id
-    context[:actor_key][:parent_id]
-  end
-
-  def current_device
-    context.fetch(:device) do
-      context[:device] = Device.find_by(id: context[:device_id])
-    end
-  end
-
-  def current_user
-    context.fetch(:user) do
-      User.find_by(id: current_device.user_id)
-    end
+    [device, token]
   end
 
   def permitted?(**)
@@ -59,7 +55,7 @@ module AuthHelpers
   def prescreen?(**)
     return true unless self.class.allowed_actors.present?
 
-    self.class.allowed_actors.reduce(false) { |acc, elem| acc || actor_is?(elem) }
+    authenticated? && actor_is?(*self.class.allowed_actors)
   end
 
   def ready?(**args)
@@ -68,13 +64,7 @@ module AuthHelpers
     end
   end
 
-  included do
-    class_attribute :allowed_actors
-  end
-
-  class_methods do
-    def allow_actors(*actors)
-      self.allowed_actors = actors
-    end
+  def request_attrs
+    context[:request].slice(:client, :client_version, :ip, :user_agent)
   end
 end
