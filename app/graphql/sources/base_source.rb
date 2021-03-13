@@ -5,7 +5,7 @@ module Sources
     protected
 
     def group_items(items)
-      groups = Hash.new { |hash, key| hash[key] = Array.new }
+      groups = Hash.new { |hash, key| hash[key] = [] }
       items.each_with_object(groups) do |elem, acc|
         acc[yield(elem)] << elem
       end

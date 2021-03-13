@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
 class PlaygroundController < ApplicationController
-  def show
-  end
+  def show; end
 end

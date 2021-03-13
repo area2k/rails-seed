@@ -41,7 +41,9 @@ module AuthHelpers
   end
 
   def login_actor(actor, **device_attrs)
-    device = actor.devices.create!(**request_attrs, **device_attrs, actor_parent_id: actor.parent_id)
+    attrs = { **request_attrs, **device_attrs, actor_parent_id: actor.parent_id }
+
+    device = actor.devices.create!(attrs)
     token = AuthenticationService.issue(device.id, jti: device.last_issued,
                                                    actor: actor.to_actor_key)
 

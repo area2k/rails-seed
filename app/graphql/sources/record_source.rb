@@ -3,6 +3,8 @@
 module Sources
   class RecordSource < BaseSource
     def initialize(model_class, query_by = :id)
+      super
+
       @model_class = model_class
       @query_by = query_by
     end

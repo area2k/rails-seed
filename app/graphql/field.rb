@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class Field < GraphQL::Schema::Field
-  attr_accessor :paginated
-  attr_accessor :allowed_actors
+  attr_accessor :allowed_actors, :paginated
 
   def initialize(*args, paginated: false, allow_actors: nil, **kwargs, &block)
     super(*args, **kwargs, &block)
