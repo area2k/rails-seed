@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module Inputs
-  module Filters
-    class <%= class_name %>Filter < BaseFilter
-      description 'Filters using <%= class_name %> fields'
+  class <%= class_name %>FilterSetInput < BaseFilterSetInput
+    description 'Available filter operations for a <%= class_name %>'
 
-      argument :field, Enums::<%= class_name %>FieldEnum, required: true
-    end
+    <%- filters.each do |name, filter| -%>
+    argument :<%= filter.fetch(:input_as, name) %>, <%= filter[:input_type] %>, required: false<%= ", as: :#{name}" if filter[:input_as] %>
+    <%- end -%>
   end
 end

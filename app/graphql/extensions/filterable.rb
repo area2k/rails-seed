@@ -3,11 +3,11 @@
 module Extensions
   class Filterable < GraphQL::Schema::FieldExtension
     def apply
-      filter_input_class = options.fetch(:input) do
-        Inputs::Filters.const_get(options[:with].to_s)
+      input_class = options.fetch(:input) do
+        Inputs.const_get("#{options.fetch(:with)}Input".demodulize)
       end
 
-      field.argument :filters, [filter_input_class], required: false
+      field.argument :filters, input_class, required: false
     end
 
     def resolve(object:, arguments:, **)
@@ -18,7 +18,11 @@ module Extensions
     end
 
     def after_resolve(value:, memo:, **)
-      options[:with].apply(value, memo.fetch(:filters, []))
+      filters = memo[:filters]
+      return value unless filters
+
+      disjunctive = filters.delete(:apply_disjunctively) || false
+      options.fetch(:with).apply(value, filters, disjunctive: disjunctive)
     end
   end
 end
