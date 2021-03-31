@@ -6,7 +6,10 @@ module Extensions
       if options[:association]
         model_class = options.fetch(:model, Object.const_get(field.owner.graphql_name))
         reflection = model_class.reflect_on_association(options[:association].to_sym)
-        raise ArgumentError, "Unknown association :#{options[:association]} on #{model_class}" unless reflection
+
+        unless reflection
+          raise ArgumentError, "Unknown association :#{options[:association]} on #{model_class}"
+        end
 
         options[:source] = build_source_from_reflection(reflection)
       else
@@ -32,9 +35,9 @@ module Extensions
         [Sources::RelationSource, scope, key]
       when ActiveRecord::Reflection::ThroughReflection
         scope = build_through_scope(reflection)
-        key = "#{reflection.through_reflection.table_name}.#{reflection.through_reflection.foreign_key}"
 
-        [Sources::ThroughSource, scope, reflection.source_reflection.active_record, reflection.through_reflection.foreign_key]
+        [Sources::ThroughSource, scope, reflection.source_reflection.active_record,
+         reflection.through_reflection.foreign_key]
       when ActiveRecord::Reflection::BelongsToReflection
         scope = build_belongs_to_scope(reflection)
         key = reflection.active_record_primary_key
@@ -55,7 +58,6 @@ module Extensions
     end
 
     def build_through_scope(reflection)
-      model = reflection.active_record
       target_model = reflection.compute_class(reflection.class_name)
       through_model = reflection.source_reflection.active_record
 

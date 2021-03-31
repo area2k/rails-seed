@@ -19,7 +19,9 @@ class FilterGenerator < Rails::Generators::NamedBase
   end
 
   def filterable_associations
-    model.reflect_on_all_associations.select { |r| r.is_a?(ActiveRecord::Reflection::BelongsToReflection) }
+    model.reflect_on_all_associations.select do |r|
+      r.is_a?(ActiveRecord::Reflection::BelongsToReflection)
+    end
   end
 
   def filterable_column_names
@@ -35,7 +37,7 @@ class FilterGenerator < Rails::Generators::NamedBase
   def generate_filters
     column_filters = filterable_column_names.each_with_object({}) do |elem, acc|
       column_data = db_columns[elem]
-      resolver, input_type = column_to_filter_attributes(elem, column_data.sql_type_metadata.type)
+      resolver, input_type = column_to_filter_attributes(column_data.sql_type_metadata.type)
 
       acc[elem] = { resolver: resolver, input_type: input_type }
     end
@@ -54,12 +56,12 @@ class FilterGenerator < Rails::Generators::NamedBase
     @model ||= class_name.constantize
   end
 
-  def column_to_filter_attributes(name, sql_type)
+  def column_to_filter_attributes(sql_type)
     case sql_type
-    when :integer then ['CompareFilter', 'Filters::IntCompareFilterInput']
-    when :date, :datetime then ['CompareFilter', 'Filters::DateTimeCompareFilterInput']
-    when :boolean then ['EqualityFilter', 'Filters::BooleanEqualityFilterInput']
-    else ['TextSearchFilter', 'String']
+    when :integer then %w[CompareFilter Filters::IntCompareFilterInput]
+    when :date, :datetime then %w[CompareFilter Filters::DateTimeCompareFilterInput]
+    when :boolean then %w[EqualityFilter Filters::BooleanEqualityFilterInput]
+    else %w[TextSearchFilter String]
     end
   end
 end

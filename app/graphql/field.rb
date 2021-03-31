@@ -21,7 +21,9 @@ class Field < GraphQL::Schema::Field
   #   return super unless @allowed_actors.present?
 
   #   allowed = super && actor_allowed?(context)
-  #   raise Errors::BaseError.new(message: 'Not allowed', code: :AUTHORIZATION_FAILED) unless allowed
+  #   unless allowed
+  #     raise Errors::BaseError.new(message: 'Not allowed', code: :AUTHORIZATION_FAILED)
+  #   end
   # end
 
   def visible?(...)

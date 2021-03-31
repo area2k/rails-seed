@@ -18,7 +18,13 @@ AllCops:
     - spec/**/*
     - test/**/*
 
+Layout/HashAlignment:
+  EnforcedLastArgumentHashStyle: ignore_implicit
+
 Lint/EmptyFile:
+  Enabled: false
+
+Lint/MissingSuper:
   Enabled: false
 
 Metrics/AbcSize:
