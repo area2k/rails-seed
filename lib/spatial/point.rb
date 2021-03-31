@@ -4,12 +4,16 @@ module Spatial
   class Point < Spatial::Geometry
     WK_PREFIX = [Spatial::WGS84, Spatial::LITTLE_ENDIAN, Spatial::POINT_TYPE].freeze
 
+    class << self
+      def from_geojson(coordinates)
+        new(*coordinates.reverse)
+      end
+    end
+
     attr_reader :srid
     attr_accessor :latitude, :longitude
 
     def initialize(latitude, longitude)
-      super
-
       @latitude = latitude
       @longitude = longitude
     end
@@ -24,6 +28,10 @@ module Spatial
 
     def to_a
       [latitude, longitude]
+    end
+
+    def serialize
+      "ST_GeomFromText('#{to_wkt}', 4326)"
     end
 
     def to_wkb

@@ -3,6 +3,7 @@
 module Spatial
   module Types
     class Geometry < ActiveModel::Type::Value
+      BYTE_PACKFLAG = 'C'
       DOUBLE_PACKFLAG = 'E'
       UINT32_PACKFLAG = 'V'
 
@@ -23,6 +24,7 @@ module Spatial
       private
 
       def cast_value(value)
+        return nil unless value.present?
         return value if value.is_a?(Spatial::Geometry)
 
         parse_wkb(value)

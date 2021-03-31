@@ -29,8 +29,8 @@ module Spatial
           offset = (2 * DOUBLE_BYTESIZE * point_count) + start
 
           points = value[start...offset].unpack("#{DOUBLE_PACKFLAG}*")
-          points.each_slice(2).with_object([]) do |(lon, lat), memo|
-            memo << Spatial::Point.new(lat, lon)
+          points.each_slice(2).map do |lon, lat|
+            Spatial::Point.new(lat, lon)
           end
         end
 

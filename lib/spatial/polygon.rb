@@ -6,13 +6,24 @@ module Spatial
 
     Ring = Struct.new(:points)
 
+    class << self
+      def from_geojson(coordinates)
+        new(coordinates.map do |ring|
+          ring.map { |point| Point.from_geojson(point) }
+        end)
+      end
+    end
+
     attr_reader :srid
     attr_accessor :rings
 
     def initialize(rings)
-      super
-
-      @rings = rings.map { |r| Ring.new(r) }
+      @rings = rings.map do |ring|
+        case ring
+        when Array then Ring.new(ring)
+        else ring
+        end
+      end
     end
 
     def ==(other)
