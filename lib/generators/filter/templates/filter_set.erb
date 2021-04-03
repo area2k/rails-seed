@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 class <%= class_name %>FilterSet < BaseFilterSet
-  base_model <%= class_name %>
-
-  include Sets::TimestampFilters
-
-  <%- filters.each do |name, filter| -%>
-  filter :<%= name %>, <%= filter[:resolver] %>
-  <%- end -%>
+  on <%= class_name %>.table do
+    <%- filters.each do |name, filter| -%>
+    filter :<%= name %>, <%= filter[:resolver] %>
+    <%- end -%>
+  end
 end
