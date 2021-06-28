@@ -8,21 +8,32 @@ module Searchable
   included do
     class_attribute :searchable_columns
 
-    scope :search, ->(query) { where(search_query("%#{query}%")) }
+    scope :search, ->(query) { where(search_node.matches("%#{query}%")) }
   end
 
   class_methods do
-    def search_query(query)
-      columns = searchable_columns.dup
-      initial = table[columns.shift].matches(query)
+    def search_column
+      @search_column ||= search_node.as('search')
+    end
 
-      columns.reduce(initial) do |memo, element|
-        memo.or(table[element].matches(query))
-      end
+    def search_node
+      @search_column_node ||= generate_search_node
+    end
+
+    def searchable_nodes
+      @searchable_nodes ||= searchable_columns.map { |el| table[el] }
     end
 
     def searchable(on:)
       self.searchable_columns = Array(on)
+    end
+
+    private
+
+    def generate_search_node
+      return searchable_nodes.first if searchable_nodes.size === 1
+
+      Arel::Nodes::ConcatWs.new(Arel::SPACE, *searchable_nodes)
     end
   end
 end
