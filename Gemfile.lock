@@ -120,7 +120,7 @@ GEM
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
-    puma (5.2.0)
+    puma (5.3.2)
       nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
@@ -237,7 +237,7 @@ DEPENDENCIES
   jwt
   listen (>= 3.0.5, < 3.2)
   mysql2 (~> 0.5)
-  puma (< 6)
+  puma (>= 5.3.1, < 6)
   rack-cors
   rack-test
   rails (= 6.1.4)

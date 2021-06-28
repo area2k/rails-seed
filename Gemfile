@@ -31,7 +31,7 @@ gem 'sidekiq'
 gem 'sinatra', require: false
 
 # Web server
-gem 'puma', '< 6'
+gem 'puma', '>= 5.3.1', '< 6'
 
 group :development, :test do
   # Linting
