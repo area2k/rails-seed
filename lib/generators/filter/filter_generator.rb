@@ -44,7 +44,7 @@ class FilterGenerator < Rails::Generators::NamedBase
 
     association_filters = filterable_associations.each_with_object({}) do |elem, acc|
       acc[elem.foreign_key] = {
-        resolver: 'MembershipFilter', input_type: 'Filters::IDMembershipFilterInput',
+        resolver: 'EqualityFilter', input_type: 'Filters::IDEqualityFilterInput',
         input_as: elem.plural_name
       }
     end
@@ -61,7 +61,7 @@ class FilterGenerator < Rails::Generators::NamedBase
     when :integer then %w[CompareFilter Filters::IntCompareFilterInput]
     when :date, :datetime then %w[CompareFilter Filters::DateTimeCompareFilterInput]
     when :boolean then %w[EqualityFilter Filters::BooleanEqualityFilterInput]
-    else %w[TextSearchFilter String]
+    else %w[TextSearchFilter Filters::TextSearchFilterInput]
     end
   end
 end
