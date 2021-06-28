@@ -12,7 +12,7 @@ class TypeGenerator < Rails::Generators::NamedBase
   private
 
   def associations
-    @associations ||= begin
+    @associations ||=
       model.reflect_on_all_associations.map do |assoc|
         class_name = assoc.options.fetch(:class_name, assoc.name).to_s.classify
 
@@ -20,7 +20,6 @@ class TypeGenerator < Rails::Generators::NamedBase
           type: assoc.collection? ? "[#{class_name}Type]" : "#{class_name}Type",
           null: !assoc.collection? && model.columns_hash[assoc.foreign_key].null }
       end
-    end
   end
 
   def db_columns

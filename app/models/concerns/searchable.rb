@@ -17,7 +17,7 @@ module Searchable
     end
 
     def search_node
-      @search_column_node ||= generate_search_node
+      @search_node ||= generate_search_node
     end
 
     def searchable_nodes
@@ -31,7 +31,7 @@ module Searchable
     private
 
     def generate_search_node
-      return searchable_nodes.first if searchable_nodes.size === 1
+      return searchable_nodes.first if searchable_nodes.size == 1
 
       Arel::Nodes::ConcatWs.new(Arel::SPACE, *searchable_nodes)
     end
