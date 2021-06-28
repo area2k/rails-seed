@@ -3,8 +3,6 @@
 module Sources
   class RelationSource < BaseSource
     def initialize(base_relation, query_by = :id)
-      super
-
       @base_relation = base_relation
       @query_by = query_by
     end
