@@ -1,7 +1,7 @@
 ruby '2.7.2'
 source 'https://rubygems.org'
 
-gem 'rails', '= 6.1.4'
+gem 'rails', '= 6.1.4.1'
 
 # API Helpers
 gem 'request_store'
