@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../../lib/spatial'
 require 'active_record/connection_adapters/abstract_mysql_adapter'
 
 module ActiveRecord
