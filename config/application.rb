@@ -30,7 +30,7 @@ end
 module YourApplication
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.0
+    config.load_defaults 6.1
 
     # Uncomment to debug code loading errors
     # Rails.autoloaders.logger = method(:puts)
@@ -45,14 +45,6 @@ module YourApplication
 
     # Autoload lib/ directory
     config.autoload_paths << "#{config.root}/lib"
-
-    # Log to STDOUT if specified
-    if ENV['RAILS_LOG_TO_STDOUT'].present?
-      logger = Logger.new(STDOUT)
-      logger.formatter = TaggedTimestampFormatter
-
-      config.logger = ActiveSupport::TaggedLogging.new(logger)
-    end
 
     # Set default log formatter for env overrides
     config.log_formatter = TaggedTimestampFormatter
