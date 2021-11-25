@@ -27,7 +27,7 @@ gem 'jwt'
 
 # Background Jobs
 gem 'redis'
-gem 'sidekiq'
+gem 'sidekiq', '~> 6'
 gem 'sinatra', require: false
 
 # Web server
