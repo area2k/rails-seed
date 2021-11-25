@@ -2,10 +2,10 @@
 
 module Types
   class UserType < BaseObject
-    include Timestamps
-    include UUID
-
     description 'User'
+
+    implements Interfaces::Node
+    implements Interfaces::HasTimestamps
 
     field :email, Scalars::Email, null: false
     field :first_name, String, null: true

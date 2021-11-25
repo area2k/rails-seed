@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
-module Timestamps
-  extend ActiveSupport::Concern
+module Interfaces
+  module HasTimestamps
+    include BaseInterface
 
-  included do
+    description 'An object with creation and update timestamps'
+
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
   end

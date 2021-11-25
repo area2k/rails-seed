@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module ErrorHelpers
-  extend ActiveSupport::Concern
+  def error!(code, message: nil, **kwargs)
+    extensions = { **kwargs, code: code }
+    error_message = message || code.to_s.humanize
 
-  def error!(**kwargs)
-    raise Errors::BaseError.new(**kwargs)
+    raise GraphQL::ExecutionError.new(error_message, extensions: extensions)
   end
 end

@@ -15,19 +15,16 @@ module AuthHelpers
 
   %i[actor actor_type actor_id actor_parent_id device device_id token user user_id].each do |name|
     define_method("current_#{name}") do
-      context[:auth].public_send(name)
+      auth_context.public_send(name)
     end
   end
 
   def actor_is?(...)
-    context[:auth].actor_is?(...)
+    auth_context.actor_is?(...)
   end
 
-  def authenticate_user(email:, password:)
-    user = User.find_by(email: email)
-    return Failure(:invalid_login) unless user&.valid_password?(password)
-
-    Success(user)
+  def auth_context
+    context[:auth]
   end
 
   def authenticated?
@@ -36,16 +33,16 @@ module AuthHelpers
 
   def authorized?(**args)
     permitted?(**args).tap do |permitted|
-      error! message: 'Not permitted', code: :AUTHORIZATION_FAILED unless permitted
+      error! 'AUTHORIZATION_FAILED', message: 'Not permitted' unless permitted
     end
   end
 
   def login_actor(actor, **device_attrs)
     attrs = { **request_attrs, **device_attrs, actor_parent_id: actor.parent_id }
-
     device = actor.devices.create!(attrs)
-    token = AuthenticationService.issue(device.id, jti: device.last_issued,
-                                                   actor: actor.to_actor_key)
+
+    claims = { jti: device.last_issued, actor: actor.to_actor_key }
+    token = AuthenticationService.issue(device.id, **claims)
 
     [device, token]
   end
@@ -62,7 +59,7 @@ module AuthHelpers
 
   def ready?(**args)
     prescreen?(**args).tap do |allowed|
-      error! message: 'Not allowed', code: :AUTHORIZATION_FAILED unless allowed
+      error! 'AUTHORIZATION_FAILED', message: 'Not allowed' unless allowed
     end
   end
 

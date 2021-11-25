@@ -2,10 +2,10 @@
 
 module Types
   class BaseObject < GraphQL::Schema::Object
-    include Finders
-
     class_attribute :allowed_actors
 
+    connection_type_class Connections::BaseConnection
+    edge_type_class Connections::BaseEdge
     field_class Field
 
     class << self

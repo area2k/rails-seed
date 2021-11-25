@@ -2,11 +2,14 @@
 
 module Mutations
   class BaseMutation < GraphQL::Schema::Mutation
+    include ArgumentLoader
     include AuthHelpers
-    include CustomArgumentLoader
     include ErrorHelpers
-    include Finders
     include MonadicResolver
+
+    field_class Field
+
+    null false
 
     class << self
       def default_graphql_name

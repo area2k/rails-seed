@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class Resolver < GraphQL::Schema::Resolver
+  include ArgumentLoader
   include AuthHelpers
-  include CustomArgumentLoader
   include ErrorHelpers
-  include Finders
+  include MonadicResolver
 
   protected
 

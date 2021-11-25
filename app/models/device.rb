@@ -6,7 +6,7 @@
 #
 #  id              :bigint           not null, primary key
 #  actor_id        :integer          not null
-#  actor_parent_id :string(32)
+#  actor_parent_id :integer
 #  actor_type      :string(32)       not null
 #  user_id         :integer
 #  uuid            :string(64)       not null
@@ -23,9 +23,10 @@
 #
 # Indexes
 #
-#  index_devices_on_refresh_token  (refresh_token) UNIQUE
-#  index_devices_on_user_id        (user_id)
-#  index_devices_on_uuid           (uuid) UNIQUE
+#  index_devices_on_actor_id_and_actor_type  (actor_id,actor_type)
+#  index_devices_on_refresh_token            (refresh_token) UNIQUE
+#  index_devices_on_user_id                  (user_id)
+#  index_devices_on_uuid                     (uuid) UNIQUE
 #
 
 class Device < ApplicationRecord
@@ -43,11 +44,15 @@ class Device < ApplicationRecord
   scope :active, -> { where(table[:expires_at].gt(arel_unix_timestamp)) }
 
   def active?
-    expires_at > Time.now.to_i
+    !expired?
   end
 
   def actor_key
     { id: actor_id, parent_id: actor_parent_id, type: actor_type }
+  end
+
+  def expired?
+    expires_at <= Time.now.to_i
   end
 
   def refresh(jti:, **attrs)

@@ -10,9 +10,9 @@ module Mutations
 
     def monadic_resolve(email:)
       maybe_find(User, email: email).fmap do |user|
-        user.update!(password_reset_token: SecureRandom.base36)
+        user.update!(password_reset_token: SecureRandom.hex)
 
-        # TODO: send forgot password email
+        # TODO: send reset password email
       end
 
       Success()

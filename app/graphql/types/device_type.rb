@@ -2,10 +2,10 @@
 
 module Types
   class DeviceType < BaseObject
-    include Timestamps
-    include UUID
-
     description 'Device'
+
+    implements Interfaces::Node
+    implements Interfaces::HasTimestamps
 
     field :last_issued, String, null: false
     field :last_issued_at, GraphQL::Types::ISO8601DateTime, null: false

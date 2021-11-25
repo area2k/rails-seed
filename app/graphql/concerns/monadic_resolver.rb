@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 module MonadicResolver
-  extend ActiveSupport::Concern
-
-  include Dry::Monads[:do, :maybe, :result]
+  include Dry::Monads[:maybe, :result]
 
   def monadic_find(model, **query)
     maybe_find(model, **query).to_result(:model_not_found)
@@ -13,8 +11,8 @@ module MonadicResolver
     Maybe(model.find_by(**query))
   end
 
-  def resolve(**kwargs)
-    result = monadic_resolve(**kwargs)
+  def resolve(...)
+    result = monadic_resolve(...)
 
     case result
     when Success
@@ -25,13 +23,11 @@ module MonadicResolver
 
       case error
       when Symbol
-        error! message: error.to_s.humanize, code: error.to_s.upcase
-      when Array
-        error! message: error[1], code: error[0].to_s.upcase
-      when StandardError
-        error! message: error.message, code: error.class.name.underscore.upcase
+        { problem: { code: error.to_s.upcase, message: error.to_s.humanize, path: [] } }
+      when Mutations::Problem
+        { problem: { code: error.code, message: error.message, path: error.path } }
       else
-        error! message: 'Server error', code: :SERVER_ERROR
+        error! 'UNKNOWN_PROBLEM', message: 'Unknown problem occurred'
       end
     else
       raise "Result #{result.inspect} is not a monad"

@@ -2,10 +2,8 @@
 
 module Queries
   class BaseQuery < GraphQL::Schema::Resolver
+    include ArgumentLoader
     include AuthHelpers
-    include CustomArgumentLoader
     include ErrorHelpers
-    include Finders
-    include MonadicResolver
   end
 end
