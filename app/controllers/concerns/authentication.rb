@@ -8,47 +8,32 @@ module Authentication
   AUTHORIZATION_HEADER = Global.headers.authorization
   CLIENT_HEADER = Global.headers.client
   CLIENT_VERSION_HEADER = Global.headers.client_version
-  NEW_TOKEN_HEADER = Global.headers.new_token
-  REFRESH_TOKEN_HEADER = Global.headers.refresh_token
-  USER_AGENT_HEADER = 'User-Agent'
+  USER_AGENT_HEADER = Global.headers.user_agent
   UNKNOWN = '<unknown>'
 
-  def attempt_refresh
-    RequestStore[:device] = Device.find_by(refresh_token: refresh_token)
-    unless RequestStore[:device]
-      Rails.logger.warn "Device not found with token: #{refresh_token}"
+  def authenticate
+    unless request_token
+      Rails.logger.warn 'No token present in request'
       return
     end
 
-    unless RequestStore[:device].active?
-      Rails.logger.warn "Current #{RequestStore[:device].id_name} is not active"
-      return
-    end
-
-    AuthenticationService.refresh(RequestStore[:device], **request_attrs).tap do |token|
-      response.set_header(NEW_TOKEN_HEADER, token.to_s)
-      Rails.logger.info "#{RequestStore[:device].id_name} refreshed: #{token[:jti]}"
+    AuthenticationService.validate(request_token).tap do |auth_context|
+      if auth_context.present?
+        Rails.logger.info "Authenticated #{auth_context.actor_type}##{auth_context.actor_id}"
+      end
     end
   end
 
   def client
-    RequestStore[:client] ||= request.headers.fetch(CLIENT_HEADER, UNKNOWN)[0...16]
+    RequestStore[:client] ||= fetch_header(CLIENT_HEADER, max: 16)
   end
 
   def client_version
-    RequestStore[:client_version] ||= request.headers.fetch(CLIENT_VERSION_HEADER, UNKNOWN)[0...32]
+    RequestStore[:client_version] ||= fetch_header(CLIENT_VERSION_HEADER, max: 32)
   end
 
   def ip
     RequestStore[:ip] ||= request.ip
-  end
-
-  def refresh_token
-    request.headers[REFRESH_TOKEN_HEADER]
-  end
-
-  def request_attrs
-    { client: client, client_version: client_version, ip: ip, user_agent: user_agent }
   end
 
   def request_id
@@ -60,27 +45,12 @@ module Authentication
   end
 
   def user_agent
-    RequestStore[:user_agent] ||= request.headers.fetch(USER_AGENT_HEADER, UNKNOWN)[0...255]
+    RequestStore[:user_agent] ||= fetch_header(USER_AGENT_HEADER, max: 255)
   end
 
-  def verify_token
-    unless request_token
-      Rails.logger.warn 'Token not present in request'
-      return
-    end
+  private
 
-    RequestStore[:token] = AuthenticationService.verify(request_token)
-    unless RequestStore[:token]
-      Rails.logger.warn 'Token not valid/whitelisted'
-      RequestStore[:token] = attempt_refresh if refresh_token.present?
-    end
-    unless RequestStore[:token]
-      Rails.logger.warn 'Token was not able to be refreshed'
-      return
-    end
-
-    AuthContext.new(RequestStore[:token], device: RequestStore[:device]).tap do |auth|
-      Rails.logger.info "Authenticated Device##{auth.device_id} (#{auth.token[:jti]})"
-    end
+  def fetch_header(name, max:)
+    request.headers.fetch(name, UNKNOWN)[0...max]
   end
 end

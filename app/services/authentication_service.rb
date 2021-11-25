@@ -1,67 +1,98 @@
 # frozen_string_literal: true
 
 module AuthenticationService
-  DEVICE_PREFIX = 'tokens:device:'
-
-  TokenNotWhitelisted = Class.new(StandardError)
+  SIGNING_SECRET = Rails.application.credentials.jwt_secret!
 
   module_function
 
-  def issue(device_id, jti: SecureRandom.base36, **attrs)
-    SecureToken.new(**attrs, jti: jti, sub: device_id).tap do |token|
-      TokenWhitelist.add(token, key: "#{DEVICE_PREFIX}#{device_id}")
-    end
+  def issue(device_id, jti: SecureRandom.hex(8), **attrs)
+    SecureToken.new(**attrs, jti: jti, sub: device_id)
   end
 
-  def refresh(device, jti: SecureRandom.base36, **request_attrs)
+  def refresh(device, jti: SecureRandom.hex(8), **request_attrs)
     issue(device.id, jti: jti, actor: device.actor_key).tap do |token|
       device.refresh(**request_attrs, jti: token[:jti])
     end
   end
 
-  def revoke(device_id)
-    TokenWhitelist.remove("#{DEVICE_PREFIX}#{device_id}")
+  def validate(request_token)
+    payload, header = JWT.decode(request_token, nil, false)
+
+    options = { algorithm: Global.auth.jwt_alg }
+    JWT.decode(request_token, SIGNING_SECRET, true, options)
+
+    AuthContext.new(payload.deep_symbolize_keys)
+  rescue JWT::ExpiredSignature
+    raise ValidationError.new('Token is expired', code: :TOKEN_EXPIRED)
+  # rescue JWT::MissingRequiredClaim
+  #   raise ValidationError.new('Token is missing required claims', code: :TOKEN_MALFORMED)
+  rescue JWT::VerificationError
+    raise ValidationError.new('Token signature invalid', code: :TOKEN_INVALID)
+  rescue JWT::DecodeError
+    raise ValidationError.new('Token cannot be decoded', code: :TOKEN_DECODE_ERROR)
   end
 
-  def revoke_all(*device_ids)
-    TokenWhitelist.remove_all(*device_ids.flat_map { |id| "#{DEVICE_PREFIX}#{id}" })
-  end
+  class ValidationError < StandardError
+    attr_reader :code
 
-  def verify(jwt)
-    verify!(jwt)
-  rescue JWT::DecodeError, TokenNotWhitelisted
-    nil
-  end
-
-  def verify!(jwt)
-    SecureToken.validate!(jwt).tap do |token|
-      key = "#{DEVICE_PREFIX}#{token[:sub]}"
-      raise TokenNotWhitelisted unless TokenWhitelist.whitelisted?(token, key: key)
+    def initialize(message, code:)
+      super(message)
+      @code = code
     end
   end
 
-  class TokenWhitelist
-    def self.add(token, key:)
-      Redis.current.multi do
-        Redis.current.zadd(key, token[:exp], token[:jti])
-        Redis.current.zremrangebyscore(key, '-inf', "(#{Time.now.to_i}")
-        Redis.current.expireat(key, token[:exp])
+  class AuthContext
+    attr_reader :token
+
+    delegate :[], to: :token
+
+    def initialize(jwt_payload)
+      @token = jwt_payload
+    end
+
+    def actor
+      @actor ||= actor_type.find_by(id: actor_id)
+    end
+
+    def actor_id
+      actor_key[:id]
+    end
+
+    def actor_is?(*types)
+      types.include?(actor_type)
+    end
+
+    def actor_key
+      token[:actor]
+    end
+
+    def actor_parent_id
+      actor_key[:parent_id]
+    end
+
+    def actor_type
+      case actor_key[:type]
+      # TODO: add your actor types here
+      when 'User' then User
+      else
+        raise ArgumentError, "Unkown actor type: #{type}"
       end
     end
 
-    def self.remove(key)
-      Redis.current.del(key)
+    def device
+      @device ||= Device.find_by(id: device_id)
     end
 
-    def self.remove_all(*keys)
-      Redis.current.del(*keys)
+    def device_id
+      token[:sub]
     end
 
-    def self.whitelisted?(token, key:)
-      expires_at = Redis.current.zscore(key, token[:jti])
-      return false unless expires_at
+    def user
+      @user ||= actor.user
+    end
 
-      expires_at > Time.now.to_i
+    def user_id
+      actor.user_id
     end
   end
 end

@@ -3,6 +3,6 @@ Rails.application.config.middleware.use Rack::Cors do
     origins '*'
     resource '/graphql', headers: :any,
                          methods: %i[get post options],
-                         expose: [Global.headers.request_id, Global.headers.new_token]
+                         expose: [Global.headers.request_id]
   end
 end

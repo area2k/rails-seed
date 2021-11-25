@@ -1,46 +1,23 @@
 # frozen_string_literal: true
 
 class SecureToken
-  SECRET = Rails.application.credentials.secret_key_base!
-
-  class << self
-    def validate!(token)
-      payload, _header = JWT.decode(token, SECRET)
-      new(payload.deep_symbolize_keys)
-    end
-
-    def validate(token)
-      validate!(token)
-    rescue JWT::DecodeError
-      nil
-    end
-  end
+  SIGNING_SECRET = Rails.application.credentials.jwt_secret!
 
   attr_accessor :claims
 
-  delegate :[], to: :claims
+  delegate :[], :[]=, to: :claims
 
-  def initialize(sub:, ttl: Global.auth.token_ttl, **opts)
-    @claims = opts
-    @claims[:sub] = sub
-    @claims[:iss] ||= Global.auth.issuer
-    @claims[:jti] ||= SecureRandom.base58
+  def initialize(ttl: Global.auth.token_ttl, **claims)
+    @claims = claims
     @claims[:exp] ||= Time.now.to_i + ttl
+    @claims[:jti] ||= SecureRandom.hex(8)
   end
 
   def expired?
-    @claims[:exp] <= Time.now.to_i
-  end
-
-  def method_missing(name, *args, &block)
-    @claims.key?(name) ? @claims[name] : super
-  end
-
-  def respond_to_missing?(name, *args, &block)
-    @claims.key?(name) || super
+    @claims.key?(:exp) && @claims[:exp] <= Time.now.to_i
   end
 
   def to_s
-    @to_s ||= JWT.encode(@claims, SECRET, Global.auth.jwt_alg)
+    @to_s ||= JWT.encode(@claims, SIGNING_SECRET, Global.auth.jwt_alg)
   end
 end

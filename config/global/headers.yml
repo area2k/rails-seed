@@ -2,6 +2,5 @@ default:
   authorization: Authorization
   client: X-Client
   client_version: X-Client-Version
-  new_token: X-Refreshed-Token
-  refresh_token: X-Refresh
   request_id: X-Request-Id
+  user_agent: User-Agent

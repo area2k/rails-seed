@@ -6,7 +6,7 @@ class GraphQLController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def execute
-    context = create_context(auth: verify_token)
+    context = create_context(auth: authenticate)
 
     result = if params[:_json]
                GraphQLService.multiplex(params[:_json], context: context)
@@ -15,10 +15,12 @@ class GraphQLController < ApplicationController
              end
 
     render json: result
-  rescue StandardError => e
-    Rails.logger.error e.full_message
-
-    render_graphql_error(e)
+  rescue AuthenticationService::ValidationError => err
+    Rails.logger.error err.message
+    render_graphql_error(err, code: err.code, status: 200)
+  rescue StandardError => err
+    Rails.logger.error err.full_message
+    render_graphql_error(err)
   end
 
   private
