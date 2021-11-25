@@ -46,18 +46,13 @@ module YourApplication
     # Autoload lib/ directory
     config.autoload_paths << "#{config.root}/lib"
 
-    # Log to STDOUT if flag set
-    log_output = if ENV['RAILS_LOG_TO_STDOUT']
-                   STDOUT
-                 else
-                   "log/#{Rails.env}.log".tap { |f| init_logfile(f) }
-                 end
+    # Log to STDOUT if specified
+    if ENV['RAILS_LOG_TO_STDOUT'].present?
+      logger = Logger.new(STDOUT)
+      logger.formatter = TaggedTimestampFormatter
 
-    # Support tagged logging and timestamp coloring
-    logger = ActiveSupport::Logger.new(log_output)
-    logger.formatter = TaggedTimestampFormatter
-
-    config.logger = ActiveSupport::TaggedLogging.new(logger)
+      config.logger = ActiveSupport::TaggedLogging.new(logger)
+    end
 
     # Set default log formatter for env overrides
     config.log_formatter = TaggedTimestampFormatter
