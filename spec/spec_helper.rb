@@ -18,10 +18,12 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
 
-  config.include Rack::Test::Methods, type: :request, file_path: %r{spec/graphql}
-  config.include Support::Requests, file_path: %r{spec/grapqhl}
+  # config.include Rack::Test::Methods, type: :request, file_path: %r{spec/graphql}
+  config.include Helpers::GraphQL, file_path: %r{spec/graphql}
 
   config.before(:suite) do
+    FactoryBot.find_definitions
+
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
   end

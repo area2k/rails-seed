@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 module Mutations
-  ResetPasswordProblem = make_problem_type('ResetPassword') do
+  UserResetPasswordProblem = make_problem_type('UserResetPassword') do
     value 'INVALID_TOKEN',
       description: 'Occurs when the given token is invalid'
   end
 
-  class ResetPassword < BaseMutation
+  class UserResetPassword < BaseMutation
     description 'Reset password of user matching the given token'
 
     argument :token, String, required: true, autofetch: :fetch_user, as: :user
     argument :password, String, required: true
 
-    field :problem, ResetPasswordProblem, null: true
+    field :problem, UserResetPasswordProblem, null: true
 
     INVALID_TOKEN_PROBLEM = Problem.new('INVALID_TOKEN', path: %w[token]).freeze
 

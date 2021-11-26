@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class ForgotPassword < BaseMutation
+  class UserForgotPassword < BaseMutation
     description 'Allow a user matching the given email to reset their password'
     type Scalars::Void
     null true
