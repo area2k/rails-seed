@@ -15,12 +15,12 @@ class GraphQLController < ApplicationController
              end
 
     render json: result
-  rescue AuthenticationService::ValidationError => err
-    Rails.logger.error err.message
-    render_graphql_error(err, code: err.code, status: 200)
-  rescue StandardError => err
-    Rails.logger.error err.full_message
-    render_graphql_error(err)
+  rescue AuthenticationService::ValidationError => e
+    Rails.logger.error e.message
+    render_graphql_error(e, code: e.code, status: 200)
+  rescue StandardError => e
+    Rails.logger.error e.full_message
+    render_graphql_error(e)
   end
 
   private

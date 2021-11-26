@@ -33,10 +33,10 @@ class Device < ApplicationRecord
   include Preprocessable
 
   preprocess uuid: -> { SecureRandom.uuid },
-             refresh_token: -> { SecureRandom.hex(16) },
-             last_issued: -> { SecureRandom.base36 },
-             last_issued_at: -> { Time.now },
-             expires_at: -> { Time.now.to_i + Global.auth.device_ttl }
+    refresh_token: -> { SecureRandom.hex(16) },
+    last_issued: -> { SecureRandom.base36 },
+    last_issued_at: -> { Time.now },
+    expires_at: -> { Time.now.to_i + Global.auth.device_ttl }
 
   belongs_to :actor, polymorphic: true
   belongs_to :user
@@ -57,6 +57,6 @@ class Device < ApplicationRecord
 
   def refresh(jti:, **attrs)
     update!(**attrs, last_issued: jti, last_issued_at: Time.now,
-                     expires_at: Time.now.to_i + Global.auth.device_ttl)
+      expires_at: Time.now.to_i + Global.auth.device_ttl)
   end
 end

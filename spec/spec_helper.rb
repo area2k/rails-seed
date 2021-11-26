@@ -16,10 +16,10 @@ RSpec.configure do |config|
   config.filter_run focus: true
   config.run_all_when_everything_filtered = true
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 
-  config.include Rack::Test::Methods, type: :request, file_path: %r{spec/api}
-  config.include Support::Requests, file_path: %r{spec/api}
+  config.include Rack::Test::Methods, type: :request, file_path: %r{spec/graphql}
+  config.include Support::Requests, file_path: %r{spec/grapqhl}
 
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction

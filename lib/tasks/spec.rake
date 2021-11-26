@@ -46,20 +46,11 @@ if %w[development test].include?(Rails.env)
 
       puts green('Done without errors!')
     end
+
+    require 'rspec/core/rake_task'
+    RSpec::Core::RakeTask.new('all')
   end
 
-  require 'rspec/core/rake_task'
-  RSpec::Core::RakeTask.new('spec:integration') do |t|
-    t.pattern = 'spec/integration/**{,/*/**}/*_spec.rb'
-  end
-
-  RSpec::Core::RakeTask.new('spec:fast') do |t|
-    t.exclude_pattern = 'spec/integration/**{,/*/**}/*_spec.rb'
-  end
-
-  task 'spec:all' => %w[spec:lint spec:fast spec:integration]
-
-  task(:default).clear
-  task default: %w[rubocop spec:all]
-  task fast: %w[rubocop spec:fast]
+  desc 'Default testing task'
+  task spec: %w[rubocop spec:all]
 end

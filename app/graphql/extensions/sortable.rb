@@ -3,8 +3,10 @@
 module Extensions
   class Sortable < GraphQL::Schema::FieldExtension
     def apply
-      field.argument :reverse, GraphQL::Types::Boolean, required: false, default_value: options.fetch(:default_reverse, false)
-      field.argument :sort_key, options.fetch(:with), required: false, default_value: options.fetch(:default_value)
+      field.argument :reverse, GraphQL::Types::Boolean, required: false,
+        default_value: options.fetch(:default_reverse, false)
+      field.argument :sort_key, options.fetch(:with), required: false,
+        default_value: options.fetch(:default_value)
     end
 
     def resolve(object:, arguments:, **)

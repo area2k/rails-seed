@@ -16,7 +16,7 @@ module AuthenticationService
   end
 
   def validate(request_token)
-    payload, header = JWT.decode(request_token, nil, false)
+    payload, = JWT.decode(request_token, nil, false)
 
     options = { algorithm: Global.auth.jwt_alg }
     JWT.decode(request_token, SIGNING_SECRET, true, options)

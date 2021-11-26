@@ -1,7 +1,7 @@
 describe PasswordService do
   context 'hash' do
     it 'should create a bcrypt hash' do
-      expect(PasswordService.hash('password')).to start_with '$2a$10$'
+      expect(PasswordService.hash('password')).to start_with '$2a$12$'
     end
   end
 

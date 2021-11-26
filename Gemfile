@@ -62,5 +62,5 @@ group :test do
   gem 'factory_bot'
 
   # Database transaction cleaning
-  gem 'database_cleaner'
+  gem 'database_cleaner-active_record'
 end
