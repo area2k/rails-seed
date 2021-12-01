@@ -9,6 +9,10 @@
 *.env
 .env.test
 
-# Ignore all configs
+# Ignore all credentials and keys
 /config/**/*.key
 /config/**/*.yml.enc
+
+# Ignore generated schema file
+schema.gql
+schema.graphql
