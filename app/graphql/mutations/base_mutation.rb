@@ -16,19 +16,21 @@ module Mutations
         name.split('::').last
       end
 
-      def define_problems(problem_definitions)
-        type_class = generate_problem_type(problem_definitions)
+      def define_problems(field_name = :problem, &block)
+        problems = MutationProblems.new
+        problems.instance_exec(&block)
 
-        field :problem, type_class, null: true
+        type_class = generate_problem_type(problems)
 
-        Class.new do
-          problem_definitions.each do |key, defn|
-            code = defn.fetch(:code, key.to_s)
-            const_set(key, Problem.new(code, path: defn[:path]).freeze)
+        field field_name, type_class, null: true
+
+        problems_class = Class.new do
+          problems.each do |key, defn|
+            const_set(key, Problem.new(defn[:code], path: defn[:path]).freeze)
           end
-
-          const_set 'Type', type_class
         end
+
+        const_set('Problems', problems_class)
       end
 
       private
@@ -41,8 +43,8 @@ module Mutations
           graphql_name "#{mutation_name}ProblemCode"
           description "Problem code for the #{lower_name} mutation"
 
-          problem_definitions.each do |code, defn|
-            value code, description: defn[:description]
+          problem_definitions.each_value do |defn|
+            value defn[:code], description: defn[:description]
           end
         end
 
@@ -61,6 +63,21 @@ module Mutations
 
     def with_void_return(&block)
       nil.tap(&block)
+    end
+  end
+
+  class MutationProblems
+    attr_reader :values
+
+    delegate :[], :each, :each_value, :fetch, to: :values
+
+    def initialize
+      @values = {}
+    end
+
+    def problem(key, description:, path: [], code: nil)
+      key = key.to_s.upcase
+      @values[key] = { description: description, path: path, code: code || key }
     end
   end
 end

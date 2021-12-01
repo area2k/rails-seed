@@ -9,16 +9,12 @@ module Mutations
     field :access_token, String, null: true
     field :refresh_token, String, null: true
 
-    Problems = define_problems(
-      DEVICE_EXPIRED: {
-        description: 'Occurs when a device is no longer able to be refreshed',
-        path: %w[]
-      },
-      INVALID_TOKEN: {
-        description: 'Occurs when the given refreshToken is invalid',
-        path: %w[refreshToken]
-      }
-    )
+    define_problems do
+      problem :device_expired, path: %w[],
+        description: 'Occurs when a device is no longer able to be refreshed'
+      problem :invalid_token, path: %w[refreshToken],
+        description: 'Occurs when the given refreshToken is invalid'
+    end
 
     def resolve(device:)
       token = AuthenticationService.refresh(device, **request_attrs)

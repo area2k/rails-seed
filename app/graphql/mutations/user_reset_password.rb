@@ -7,12 +7,10 @@ module Mutations
     argument :token, String, required: true, autofetch: :fetch_user, as: :user
     argument :password, String, required: true
 
-    Problems = define_problems(
-      INVALID_TOKEN: {
-        description: 'Occurs when the given token is invalid',
-        path: %w[token]
-      }
-    )
+    define_problems do
+      problem :invalid_token, path: %w[token],
+        description: 'Occurs when the given token is invalid'
+    end
 
     def resolve(user:, password:)
       user.update!(password: password, password_reset_token: nil, password_stale: false)
