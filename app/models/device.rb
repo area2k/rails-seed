@@ -32,7 +32,7 @@
 class Device < ApplicationRecord
   include Preprocessable
 
-  preprocess uuid: -> { SecureRandom.uuid },
+  preprocess uuid: -> { SecureRandom.hex },
     refresh_token: -> { SecureRandom.hex(16) },
     last_issued: -> { SecureRandom.base36 },
     last_issued_at: -> { Time.now },

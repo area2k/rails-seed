@@ -26,7 +26,7 @@ class User < ApplicationRecord
   include Preprocessable
   include Searchable
 
-  preprocess uuid: -> { SecureRandom.uuid }
+  preprocess uuid: -> { SecureRandom.hex }
   searchable on: %i[uuid email first_name last_name]
 
   has_many :active_devices, -> { active.order(last_issued_at: :desc) }, class_name: 'Device'
