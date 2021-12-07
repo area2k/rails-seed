@@ -1,7 +1,8 @@
 ruby '2.7.2'
 source 'https://rubygems.org'
 
-gem 'rails', '= 6.1.4.1'
+gem 'rails', '= 7.0.0'
+gem "sprockets-rails", ">= 3.4.1"
 
 # API Helpers
 gem 'request_store'
@@ -48,7 +49,9 @@ group :development, :test do
   gem 'spring'
 
   # Model Annotations
-  gem 'annotate'
+  # awaiting Rails 7 support - https://github.com/ctran/annotate_models/issues/910#issuecomment-997003275
+  git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+  gem 'annotate', github: 'dabit/annotate_models', branch: 'rails-7'
 
   # Seeding information
   gem 'faker'
