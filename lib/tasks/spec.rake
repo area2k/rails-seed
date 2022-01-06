@@ -18,7 +18,7 @@ def red(str)
   "\e[31m#{str}\e[0m"
 end
 
-if %w[development test].include?(Rails.env)
+if %w[development test].include?(Rails.env) && defined?(RSpec)
   namespace :spec do
     desc 'Lint specs for debugging code'
     task :lint do

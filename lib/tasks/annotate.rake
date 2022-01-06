@@ -1,4 +1,4 @@
-if Rails.env.development?
+if Rails.env.development? && defined?(RuboCop) && defined?(AnnotateModels)
   task set_annotation_options: :environment do
     Annotate.set_defaults(models: true, skip_on_db_migrate: true)
   end
