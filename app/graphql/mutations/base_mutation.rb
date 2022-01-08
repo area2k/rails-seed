@@ -16,9 +16,9 @@ module Mutations
         name.split('::').last
       end
 
-      def define_problems(field_name = :problem, &block)
+      def define_problems(field_name = :problem, &)
         problems = MutationProblems.new
-        problems.instance_exec(&block)
+        problems.instance_exec(&)
 
         type_class = generate_problem_type(problems)
 
@@ -61,8 +61,8 @@ module Mutations
 
     protected
 
-    def with_void_return(&block)
-      nil.tap(&block)
+    def with_void_return(&)
+      nil.tap(&)
     end
   end
 
@@ -76,8 +76,8 @@ module Mutations
     end
 
     def problem(key, description:, path: [], code: nil)
-      key = key.to_s.upcase
-      @values[key] = { description: description, path: path, code: code || key }
+      code ||= key.to_s.upcase
+      @values[key] = { description:, path:, code: }
     end
   end
 end

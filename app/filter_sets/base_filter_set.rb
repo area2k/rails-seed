@@ -7,16 +7,16 @@ class BaseFilterSet
     attr_reader :join_sources, :table
 
     def apply(relation, filters, disjunctive: false)
-      new(relation, disjunctive: disjunctive).apply(filters)
+      new(relation, disjunctive:).apply(filters)
     end
 
     def filter(name, resolver, column: nil, **args)
       filters[name.to_sym || column] = {
+        args:,
+        resolver:,
         table: @table,
         column: parse_column(column || name),
-        resolver: resolver,
-        join_sources: @join_sources&.flatten,
-        args: args
+        join_sources: @join_sources&.flatten
       }
     end
 
@@ -85,7 +85,7 @@ class BaseFilterSet
       raise UnknownFilter, "Unknown filter: `#{name}`" unless self.class.filters.key?(name)
 
       filter = self.class.filters[name]
-      conditional = filter[:resolver].apply(filter: filter, value: value)
+      conditional = filter[:resolver].apply(filter:, value:)
       join_sources = filter[:join_sources]
 
       result[:conditions] << conditional if conditional

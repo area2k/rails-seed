@@ -25,7 +25,7 @@ module Mutations
     private
 
     def fetch_device(refresh_token)
-      Device.find_by(refresh_token: refresh_token).tap do |device|
+      Device.find_by(refresh_token:).tap do |device|
         raise Problems::INVALID_TOKEN if device.nil?
         raise Problems::DEVICE_EXPIRED if device.expired?
       end

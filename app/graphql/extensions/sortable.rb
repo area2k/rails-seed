@@ -14,7 +14,7 @@ module Extensions
       reverse = clean_args.delete(:reverse)
       sort_key = clean_args.delete(:sort_key)
 
-      yield(object, clean_args, { reverse: reverse, sort_key: sort_key })
+      yield(object, clean_args, { reverse:, sort_key: })
     end
 
     def after_resolve(value:, memo:, **)

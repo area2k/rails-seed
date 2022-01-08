@@ -5,7 +5,7 @@ module Enums
     class << self
       def from_enum(enum_class)
         enum_class.members.each do |key, value|
-          value key, value: value
+          value(key, value:)
         end
       end
     end

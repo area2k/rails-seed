@@ -14,7 +14,7 @@ module Extensions
       clean_args = arguments.dup
       filters = clean_args.delete(:filters)
 
-      yield(object, clean_args, { filters: filters })
+      yield(object, clean_args, { filters: })
     end
 
     def after_resolve(value:, memo:, **)
@@ -22,7 +22,7 @@ module Extensions
       return value unless filters
 
       disjunctive = filters.delete(:apply_disjunctively) || false
-      options.fetch(:with).apply(value, filters, disjunctive: disjunctive)
+      options.fetch(:with).apply(value, filters, disjunctive:)
     end
   end
 end

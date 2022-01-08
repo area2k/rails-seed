@@ -39,7 +39,7 @@ class FilterGenerator < Rails::Generators::NamedBase
       column_data = db_columns[elem]
       resolver, input_type = column_to_filter_attributes(column_data.sql_type_metadata.type)
 
-      acc[elem] = { resolver: resolver, input_type: input_type }
+      acc[elem] = { resolver:, input_type: }
     end
 
     association_filters = filterable_associations.each_with_object({}) do |elem, acc|

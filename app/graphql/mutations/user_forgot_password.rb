@@ -9,7 +9,7 @@ module Mutations
     argument :email, Scalars::Email, required: true
 
     def resolve(email:)
-      maybe_find(User, email: email).fmap do |user|
+      maybe_find(User, email:).fmap do |user|
         user.update!(password_reset_token: SecureRandom.hex)
 
         # TODO: send reset password email

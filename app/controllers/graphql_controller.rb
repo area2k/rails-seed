@@ -9,9 +9,9 @@ class GraphQLController < ApplicationController
     context = create_context(auth: authenticate)
 
     result = if params[:_json]
-               GraphQLService.multiplex(params[:_json], context: context)
+               GraphQLService.multiplex(params[:_json], context:)
              else
-               GraphQLService.execute(params, context: context)
+               GraphQLService.execute(params, context:)
              end
 
     render json: result
@@ -30,12 +30,12 @@ class GraphQLController < ApplicationController
       auth: auth,
       authenticated?: auth.present?,
       request: {
-        client: client,
-        client_version: client_version,
+        client:,
+        client_version:,
+        ip:,
+        user_agent:,
         id: request_id,
-        ip: ip,
-        token: request_token,
-        user_agent: user_agent
+        token: request_token
       }
     }
   end
@@ -45,9 +45,9 @@ class GraphQLController < ApplicationController
       message: error.message,
       locations: [{ line: 1, column: 1 }],
       path: [],
-      extensions: { code: code }
+      extensions: { code: }
     }
 
-    render json: { errors: [payload] }, status: status
+    render(json: { errors: [payload] }, status:)
   end
 end

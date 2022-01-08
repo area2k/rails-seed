@@ -6,11 +6,11 @@ module AuthenticationService
   module_function
 
   def issue(device_id, jti: SecureRandom.hex(8), **attrs)
-    SecureToken.new(**attrs, jti: jti, sub: device_id)
+    SecureToken.new(**attrs, jti:, sub: device_id)
   end
 
   def refresh(device, jti: SecureRandom.hex(8), **request_attrs)
-    issue(device.id, jti: jti, actor: device.actor_key).tap do |token|
+    issue(device.id, jti:, actor: device.actor_key).tap do |token|
       device.refresh(**request_attrs, jti: token[:jti])
     end
   end

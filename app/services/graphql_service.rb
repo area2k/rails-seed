@@ -6,16 +6,16 @@ module GraphQLService
   def execute(query, context:)
     Schema.execute(query[:query], operation_name: query[:operationName],
                                   variables: hasherize(query[:variables]),
-                                  context: context)
+                                  context:)
   end
 
   def multiplex(queries, context:)
     input = queries.map do |query|
       {
+        context:,
         query: query[:query],
         operation_name: query[:operationName],
-        variables: hasherize(query[:variables]),
-        context: context
+        variables: hasherize(query[:variables])
       }
     end
 

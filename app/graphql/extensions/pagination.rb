@@ -17,18 +17,15 @@ module Extensions
       page = clean_args.delete(:page)
       per_page = clean_args.delete(:per_page)
 
-      yield(object, clean_args, { page: page, per_page: per_page })
+      yield(object, clean_args, { page:, per_page: })
     end
 
     def after_resolve(value:, arguments:, memo:, **)
       lookahead = arguments[:lookahead]
       page, per_page = memo.values_at(:page, :per_page)
 
-      result = { items: resolve_items(value, page: page, per_page: per_page) }
-
-      if lookahead.selects?(:page_info)
-        result[:page_info] = resolve_page_info(value, per_page: per_page)
-      end
+      result = { items: resolve_items(value, page:, per_page:) }
+      result[:page_info] = resolve_page_info(value, per_page:) if lookahead.selects?(:page_info)
 
       result
     end
@@ -43,7 +40,7 @@ module Extensions
       total_items = value.unscope(:select).count
       total_pages = (total_items / per_page.to_f).ceil
 
-      { total_items: total_items, total_pages: total_pages }
+      { total_items:, total_pages: }
     end
   end
 end

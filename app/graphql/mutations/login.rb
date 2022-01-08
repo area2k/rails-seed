@@ -12,13 +12,13 @@ module Mutations
     field :user, Types::UserType, null: false
 
     def resolve(email:, password:)
-      user = User.find_by(email: email)
+      user = User.find_by(email:)
       invalid_login! unless user&.valid_password?(password)
 
       device = user.devices.create!(**request_attrs)
       token = AuthenticationService.issue(device_id, jti: device.last_issued)
 
-      { access_token: token.to_s, refresh_token: device.refresh_token, user: user }
+      { access_token: token.to_s, refresh_token: device.refresh_token, user: }
     end
 
     private

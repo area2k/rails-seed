@@ -13,7 +13,7 @@ module Mutations
     end
 
     def resolve(user:, password:)
-      user.update!(password: password, password_reset_token: nil, password_stale: false)
+      user.update!(password:, password_reset_token: nil, password_stale: false)
 
       { problem: nil }
     end

@@ -21,13 +21,7 @@ class Filter
     end
 
     def filter(field, table: @table, join: nil, preprocess: nil, column: nil, &block)
-      filters[field] = {
-        table: table,
-        column: column,
-        join: join,
-        preprocess: preprocess,
-        process: block
-      }
+      filters[field] = { table:, column:, join:, preprocess:, process: block }
     end
 
     def filters

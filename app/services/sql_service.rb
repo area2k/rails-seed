@@ -11,7 +11,7 @@ module SQLService
     ApplicationRecord.connection.execute(sql.tr("\n", ' '))
   end
 
-  def insert(model, values, except: %w[id], columns: columns(model, except: except))
+  def insert(model, values, except: %w[id], columns: columns(model, except:))
     SQLService.execute <<~SQL
       INSERT INTO #{model.table_name} (#{columns.join(', ')})
       VALUES #{values.join(', ')}

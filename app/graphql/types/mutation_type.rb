@@ -9,8 +9,7 @@ module Types
       mutation = Mutations.const_get(name)
       next unless mutation < Mutations::BaseMutation
 
-      field name.to_s.underscore, mutation: mutation,
-        allow_actors: mutation.allowed_actors
+      field name.to_s.underscore, mutation:, allow_actors: mutation.allowed_actors
     end
   end
 end

@@ -8,7 +8,7 @@ class Resolver < GraphQL::Schema::Resolver
 
   protected
 
-  def with_void_return(&block)
-    nil.tap(&block)
+  def with_void_return(&)
+    nil.tap(&)
   end
 end
