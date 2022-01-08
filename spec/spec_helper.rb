@@ -10,6 +10,8 @@ ActiveRecord::Migration.maintain_test_schema!
 
 Dir[File.dirname(__FILE__) + '/helpers/*.rb'].each { |file| require file }
 
+DatabaseCleaner.url_allowlist = [%r{host.docker.internal}]
+
 RSpec.configure do |config|
   Rails.application.eager_load!
 

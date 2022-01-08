@@ -26,7 +26,7 @@ module Mutations
 
         problems_class = Class.new do
           problems.each do |key, defn|
-            const_set(key, Problem.new(defn[:code], path: defn[:path]).freeze)
+            const_set(key.to_s.upcase, Problem.new(defn[:code], path: defn[:path]).freeze)
           end
         end
 
