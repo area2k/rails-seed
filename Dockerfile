@@ -1,8 +1,15 @@
 # Base image with ruby + buildtime dependencies
 FROM ruby:3.1.0-alpine as ruby_base
 
-RUN apk add --update --no-cache tzdata curl imagemagick mysql-dev mysql-client \
-  wget git build-base cairo-dev cairo cairo-tools poppler poppler-dev
+RUN apk add --update --no-cache \
+  # build toolchain for C extension gems
+  build-base \
+  # timezone data for rails
+  tzdata \
+  # required to build mysql2 gem
+  mysql-dev \
+  # database client for mysql
+  mysql-client
 
 # Gem cache layer
 FROM ruby_base as gems_cache
@@ -20,7 +27,7 @@ RUN bundle config set path './vendor/bundle'
 COPY Gemfile .
 COPY Gemfile.lock .
 
-RUN bundle install
+RUN bundle install && rm -rf /root/.bundle/cache
 
 # Rails environment layer
 FROM ruby_base as rails_environment
