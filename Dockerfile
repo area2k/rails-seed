@@ -1,5 +1,5 @@
 # Base image with ruby + buildtime dependencies
-FROM ruby:2.7.2-alpine as ruby_base
+FROM ruby:3.1.0-alpine as ruby_base
 
 RUN apk add --update --no-cache tzdata curl imagemagick mysql-dev mysql-client \
   wget git build-base cairo-dev cairo cairo-tools poppler poppler-dev

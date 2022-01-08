@@ -1,7 +1,7 @@
-ruby '2.7.2'
+ruby '3.1.0'
 source 'https://rubygems.org'
 
-gem 'rails', '= 7.0.0'
+gem 'rails', '= 7.0.1'
 gem "sprockets-rails", ">= 3.4.1"
 
 # API Helpers
@@ -17,7 +17,7 @@ gem 'graphql', '= 1.13.0'
 gem 'dry-monads', require: 'dry/monads/all'
 
 # Global configs
-gem 'global'
+gem 'global', '>= 2.1'
 
 # Database
 gem 'mysql2', '~> 0.5'
@@ -57,7 +57,7 @@ group :development, :test do
   gem 'faker'
 
   # Autoloader filewatching
-  gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'listen', '< 4'
 end
 
 group :test do

@@ -1,0 +1,5 @@
+.git*
+.rubocop*
+log/
+spec/
+tmp/
