@@ -9,12 +9,6 @@ module AuthenticationService
     SecureToken.new(**attrs, jti:, sub: device_id)
   end
 
-  def refresh(device, jti: SecureRandom.hex(8), **request_attrs)
-    issue(device.id, jti:, actor: device.actor_key).tap do |token|
-      device.refresh(**request_attrs, jti: token[:jti])
-    end
-  end
-
   def validate(request_token)
     payload, = JWT.decode(request_token, nil, false)
 
@@ -51,32 +45,27 @@ module AuthenticationService
     end
 
     def actor
-      @actor ||= actor_type.find_by(id: actor_id)
+      @actor ||= actor_kind.find_by(id: actor_id)
     end
 
     def actor_id
       actor_key[:id]
     end
 
-    def actor_is?(*types)
-      types.include?(actor_type)
+    def actor_is?(*kinds)
+      kinds.include?(actor_kind)
     end
 
     def actor_key
       token[:actor]
     end
 
-    def actor_parent_id
-      actor_key[:parent_id]
+    def actor_kind
+      ActorKind.from_str(actor_key[:kind])
     end
 
-    def actor_type
-      case actor_key[:type]
-      # TODO: add your actor types here
-      when 'User' then User
-      else
-        raise ArgumentError, "Unkown actor type: #{type}"
-      end
+    def actor_parent_id
+      actor_key[:parent_id]
     end
 
     def device

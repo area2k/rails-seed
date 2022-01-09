@@ -19,7 +19,7 @@ module Authentication
 
     AuthenticationService.validate(request_token).tap do |auth_context|
       if auth_context.present?
-        Rails.logger.info "Authenticated #{auth_context.actor_type}##{auth_context.actor_id}"
+        Rails.logger.info "Authenticated #{auth_context.actor_kind}##{auth_context.actor_id}"
       end
     end
   end

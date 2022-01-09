@@ -36,6 +36,6 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def to_actor_key
-    { id:, parent_id: respond_to?(:parent_id) ? parent_id : nil, type: base_class_name }
+    { id:, parent_id: respond_to?(:parent_id) ? parent_id : nil, kind: base_class_name }
   end
 end

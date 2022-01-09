@@ -13,7 +13,7 @@ module AuthHelpers
     end
   end
 
-  %i[actor actor_type actor_id actor_parent_id device device_id token user user_id].each do |name|
+  %i[actor actor_kind actor_id actor_parent_id device device_id token user user_id].each do |name|
     define_method("current_#{name}") do
       auth_context.public_send(name)
     end

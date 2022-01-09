@@ -44,6 +44,10 @@ class User < ApplicationRecord
     password_digest.present?
   end
 
+  def user_id
+    id
+  end
+
   def valid_password?(value)
     password? && PasswordService.valid?(value, password_digest)
   end

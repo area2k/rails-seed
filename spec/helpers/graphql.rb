@@ -6,12 +6,12 @@ module Helpers
       request: {}
     }
 
-    def build_auth_context(device_id: 1, actor_id: 1, actor_type: 'User', actor_parent_id: nil)
+    def build_auth_context(device_id: 1, actor_id: 1, actor_kind: 'User', actor_parent_id: nil)
       AuthenticationService::AuthContext.new(
         sub: device_id,
         actor: {
           id: actor_id,
-          type: actor_type,
+          kind: actor_kind,
           parent_id: actor_parent_id
         }
       )
@@ -33,7 +33,7 @@ module Helpers
     end
 
     def expect_no_errors
-      expect(@errors).to be_empty
+      expect(@errors).to_not be_present
     end
 
     def expect_no_problem_with(data_key)

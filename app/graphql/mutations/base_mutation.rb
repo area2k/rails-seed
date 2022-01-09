@@ -61,6 +61,10 @@ module Mutations
 
     protected
 
+    def request_attrs
+      context[:request].slice(:client, :client_version, :ip, :user_agent)
+    end
+
     def with_void_return(&)
       nil.tap(&)
     end
